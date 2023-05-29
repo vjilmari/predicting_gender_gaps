@@ -1,0 +1,439 @@
+#' ---
+#' title: "Predicting cross-country variability in broad interest in science differences between boys and girls with country-level gender equality."
+#' output:
+#'   html_document: 
+#'     df_print: default
+#'     toc: yes
+#'     number_sections: yes
+#'     keep_md: yes
+#' ---
+#' 
+## ----setup, include=FALSE---------------------------------------------------------------
+knitr::opts_chunk$set(echo = TRUE)
+
+#' 
+#' # Preparations
+#' 
+#' ## Packages
+#' 
+## ----message=FALSE, warning=FALSE-------------------------------------------------------
+library(multid)
+library(lmerTest)
+library(rio)
+library(dplyr)
+library(tibble)
+library(ggpubr)
+library(ggplot2)
+library(MetBrewer)
+library(emmeans)
+library(finalfit)
+source("../../custom_functions.R")
+
+#' 
+#' ## Data
+#' 
+## ---------------------------------------------------------------------------------------
+
+coltypes<-c("text","numeric","numeric","numeric","numeric",
+            "text","numeric","numeric","numeric","text",
+            "text","text","text","numeric","text",
+            "text","text","text")
+
+# individual-level data
+fdat<-import("../data/processed/fdat.xlsx",
+             col_types=coltypes)
+# country-level data
+cdat<-import("../data/processed/cdat_processed.xlsx")
+
+#' 
+#' ## Data exclusions and transformations
+#' 
+## ---------------------------------------------------------------------------------------
+fdat<-fdat %>%
+  dplyr::select(CNT,Sex,INTBRSCI,GGGI_2015) %>%
+  na.omit() %>%
+  mutate(sex.c=ifelse(Sex==1,-0.5,0.5))
+
+# standardize predictor
+
+GGGI_2015 <- tapply(fdat$GGGI_2015,
+                         fdat$CNT,
+                         mean,
+                         na.rm = TRUE
+  )
+
+fdat$GGGI_2015.z<-
+  (fdat$GGGI_2015-mean(GGGI_2015))/
+  sd(GGGI_2015)
+
+
+
+#' 
+#' 
+#' # Analysis
+#' 
+#' ## Reliability of the difference score
+#' 
+## ---------------------------------------------------------------------------------------
+
+reliab.INTBRSCI<-
+  reliability_dms(
+    data=fdat,
+    diff_var="sex.c",var = "INTBRSCI",
+    diff_var_values = c(0.5,-0.5),
+    group_var = "CNT")
+
+
+export(t(data.frame(reliab.INTBRSCI)),
+       "../results/reliab.INTBRSCI.xlsx",
+       overwrite=T)
+reliab.INTBRSCI
+
+
+#' 
+#' ## Multi-level model
+#' 
+#' ### Fit model
+#' 
+## ---------------------------------------------------------------------------------------
+
+fit_INTBRSCI<-
+  ddsc_ml(data = fdat,predictor = "GGGI_2015",
+          moderator = "sex.c",moderator_values=c(0.5,-0.5),
+          DV = "INTBRSCI",lvl2_unit = "CNT",re_cov_test = T,
+          scaling_sd = "observed")
+
+#' 
+#' ### Descriptive statistics
+#' 
+## ---------------------------------------------------------------------------------------
+export(rownames_to_column(data.frame(fit_INTBRSCI$descriptives)),
+       "../results/INTBRSCI_ml_desc.xlsx",
+       overwrite=T)
+round(fit_INTBRSCI$descriptives,2)
+round(fit_INTBRSCI$SDs,2)
+
+#' 
+#' ### Variance heterogeneity test
+#' 
+## ---------------------------------------------------------------------------------------
+export(t(data.frame(fit_INTBRSCI$re_cov_test)),
+       "../results/INTBRSCI_ml_var_test.xlsx",
+       overwrite=T)
+round(fit_INTBRSCI$re_cov_test,3)
+
+#' 
+#' ### Component correlation
+#' 
+## ---------------------------------------------------------------------------------------
+export(rownames_to_column(data.frame(fit_INTBRSCI$ddsc_sem_fit$variance_test)),
+       "../results/INTBRSCI_ml_comp_cor.xlsx",
+       overwrite=T)
+round(fit_INTBRSCI$ddsc_sem_fit$variance_test,3)
+
+#' 
+#' ### Deconstructing results
+#' 
+## ---------------------------------------------------------------------------------------
+export(rownames_to_column(data.frame(fit_INTBRSCI$results)),
+       "../results/INTBRSCI_ml_results.xlsx",
+       overwrite=T)
+round(fit_INTBRSCI$results,3)
+
+#' 
+#' ### Multi-level model output
+#' 
+## ---------------------------------------------------------------------------------------
+# cross-level interaction model
+summary(fit_INTBRSCI$model)
+
+# reduced model without the predictor
+summary(fit_INTBRSCI$reduced_model)
+
+#' 
+#' ## Country-level path model
+#' 
+#' ### Fit the model
+#' 
+#' The model is already stored within the multi-level model object. 
+#' 
+## ---------------------------------------------------------------------------------------
+fit_INTBRSCI_sem<-fit_INTBRSCI$ddsc_sem_fit
+
+#' 
+#' ### Results
+#' 
+#' These are the same for both modeling techniques
+#' 
+## ---------------------------------------------------------------------------------------
+export(rownames_to_column(data.frame(fit_INTBRSCI_sem$results)),
+       "../results/INTBRSCI_sem_results.xlsx",
+       overwrite=T)
+round(fit_INTBRSCI_sem$results,3)
+
+#' 
+#' ## Plot the results
+#' 
+## ---------------------------------------------------------------------------------------
+# start with obtaining predicted values for means and differences
+
+# refit reduced and full models with GGGI in original scale
+
+ml_INTBRSCI_red<-
+  lmer(INTBRSCI~sex.c+(sex.c|CNT),data=fdat,
+       control = lmerControl(optimizer="bobyqa",
+                             optCtrl=list(maxfun=2e6)))
+
+# refit the model with raw variable
+
+ml_INTBRSCI<-
+  lmer(INTBRSCI~sex.c*GGGI_2015+(sex.c|CNT),data=fdat,
+       control = lmerControl(optimizer="bobyqa",
+                             optCtrl=list(maxfun=2e6)))
+
+# point predictions as function of GGGI for components
+
+
+p<-
+  emmip(
+    ml_INTBRSCI, 
+    sex.c ~ GGGI_2015,
+    at=list(sex.c = c(-0.5,0.5),
+            GGGI_2015=
+              seq(from=round(range(fdat$GGGI_2015,na.rm=T)[1],2),
+                  to=round(range(fdat$GGGI_2015,na.rm=T)[2],2),
+                  by=0.001)),
+    plotit=F,CIs=T,lmerTest.limit = 1e6,disable.pbkrtest=T)
+
+p$sex<-p$tvar
+levels(p$sex)<-c("Girls","Boys")
+
+# obtain min and max for aligned plots
+min.y.comp<-min(p$LCL)
+max.y.comp<-max(p$UCL)
+
+# Boys and Girls mean distributions
+
+p3<-coefficients(ml_INTBRSCI_red)$CNT
+p3<-cbind(rbind(p3,p3),weight=rep(c(-0.5,0.5),each=nrow(p3)))
+p3$xvar<-p3$`(Intercept)`+p3$sex.c*p3$weight
+p3$sex<-as.factor(p3$weight)
+levels(p3$sex)<-c("Girls","Boys")
+
+# obtain min and max for aligned plots
+min.y.mean.distr<-min(p3$xvar)
+max.y.mean.distr<-max(p3$xvar)
+
+# obtain the coefs for the sex-effect (difference) as function of GGGI
+
+p2<-data.frame(
+  emtrends(ml_INTBRSCI,var="sex.c",
+           specs="GGGI_2015",
+           at=list(#Sex = c(-0.5,0.5),
+             GGGI_2015=
+               seq(from=round(range(fdat$GGGI_2015,na.rm=T)[1],2),
+                   to=round(range(fdat$GGGI_2015,na.rm=T)[2],2),
+                   by=0.001)),
+           lmerTest.limit = 1e6,disable.pbkrtest=T))
+
+p2$yvar<-p2$sex.c.trend
+p2$xvar<-p2$GGGI_2015
+p2$LCL<-p2$lower.CL
+p2$UCL<-p2$upper.CL
+
+# obtain min and max for aligned plots
+min.y.diff<-min(p2$LCL)
+max.y.diff<-max(p2$UCL)
+
+# difference score distribution
+
+p4<-coefficients(ml_INTBRSCI_red)$CNT
+p4$xvar=(+1)*p4$sex.c
+
+# obtain mix and max for aligned plots
+
+min.y.diff.distr<-min(p4$xvar)
+max.y.diff.distr<-max(p4$xvar)
+
+# define mins and maxs
+
+min.y.pred<-
+  ifelse(min.y.comp<min.y.mean.distr,min.y.comp,min.y.mean.distr)
+
+max.y.pred<-
+  ifelse(max.y.comp>max.y.mean.distr,max.y.comp,max.y.mean.distr)
+
+min.y.narrow<-
+  ifelse(min.y.diff<min.y.diff.distr,min.y.diff,min.y.diff.distr)
+
+max.y.narrow<-
+  ifelse(max.y.diff>max.y.diff.distr,max.y.diff,max.y.diff.distr)
+
+# Figures 
+
+# p1
+
+# scaled simple effects to the plot
+
+pvals<-p_coding(c(fit_INTBRSCI$results["b_21","p.value"],
+                    fit_INTBRSCI$results["b_11","p.value"]))
+
+ests<-
+  round_tidy(c(fit_INTBRSCI$results["b_21","estimate"],
+               fit_INTBRSCI$results["b_11","estimate"]),2)
+
+coef1<-paste0("b21 = ",ests[1],", p = ",pvals[1])
+coef2<-paste0("b11 = ",ests[2],", p = ",pvals[2])
+
+coef_q<-round_tidy(fit_INTBRSCI$results["q_b11_b21","estimate"],2)
+coef_q<-paste0("q_b = ",coef_q,", p ",
+               ifelse(fit_INTBRSCI$results["interaction","p.value"]<.001,"","="),
+               p_coding(fit_INTBRSCI$results["interaction","p.value"]))
+
+coefs<-data.frame(sex=c("Girls","Boys"),
+                  coef=c(coef1,coef2))
+
+p1.INTBRSCI<-ggplot(p,aes(y=yvar,x=xvar,color=sex))+
+  geom_point(size=3)+
+  geom_errorbar(aes(ymin=LCL, ymax=UCL),alpha=0.5)+
+  xlab("Global Gender Gap Index")+
+  #ylim=c(2.3,3.9)+
+  ylim(c(min.y.pred,max.y.pred))+
+  ylab("Interest in Science")+
+  scale_color_manual(values=met.brewer("Archambault")[c(6,2)])+
+  theme(legend.position = "top",
+        legend.title=element_blank(),
+        text=element_text(size=16,  family="sans"),
+        panel.background = element_rect(fill = "white",
+                                        #colour = "black",
+                                        #size = 0.5, linetype = "solid"
+        ),
+        panel.grid.major.x = element_line(linewidth = 0.5, linetype = 2,
+                                          colour = "gray"))+
+  geom_text(data = coefs,show.legend=F,
+            aes(label=coef,x=0.65,
+                y=c(round(min(p$LCL),2)+0.05-0.05
+                    ,round(min(p$LCL),2)-0.05),size=14,hjust="left"))+
+  geom_text(inherit.aes=F,aes(x=0.65,y=round(min(p$LCL),2)-0.10,
+                              label=coef_q,size=14,hjust="left"),
+            show.legend=F)
+p1.INTBRSCI
+
+# prediction plot for difference score
+
+pvals2<-p_coding(fit_INTBRSCI$results["r_xy1y2","p.value"])
+
+ests2<-
+  round_tidy(fit_INTBRSCI$results["r_xy1y2","estimate"],2)
+
+coefs2<-paste0("r = ",ests2,
+               ", p ",
+               ifelse(fit_INTBRSCI$results["r_xy1y2","p.value"]<.001,"","="),
+               pvals2)
+
+p2.INTBRSCI<-ggplot(p2,aes(y=yvar,x=xvar))+
+  geom_point(size=3)+
+  geom_errorbar(aes(ymin=LCL, ymax=UCL),alpha=0.5)+
+  xlab("Global Gender Gap Index")+
+  ylim(c(min.y.narrow,max.y.narrow))+
+  ylab("Difference in Interest in Science")+
+  #scale_color_manual(values=met.brewer("Archambault")[c(6,2)])+
+  theme(legend.position = "right",
+        legend.title=element_blank(),
+        text=element_text(size=16,  family="sans"),
+        panel.background = element_rect(fill = "white",
+                                        #colour = "black",
+                                        #size = 0.5, linetype = "solid"
+        ),
+        panel.grid.major.x = element_line(size = 0.5, linetype = 2,
+                                          colour = "gray"))+
+  #geom_text(coef2,aes(x=0.63,y=min(p2$LCL)))
+  geom_text(data = data.frame(coefs2),show.legend=F,
+            aes(label=coefs2,x=0.65,
+                y=c(round(min(p2$LCL),2)),size=14,hjust="left"))
+p2.INTBRSCI
+
+# mean-level distributions
+
+p3.INTBRSCI<-
+  ggplot(p3, aes(x=xvar, fill=sex)) + 
+  geom_density(alpha=.75) + 
+  scale_fill_manual(values=met.brewer("Archambault")[c(6,2)])+
+  #scale_fill_manual(values=c("turquoise3","orangered2","black")) + 
+  xlab("")+
+  ylab("Density")+
+  ylim(c(0,6))+
+  xlim(c(min.y.pred,max.y.pred))+
+  theme_bw()+
+  theme(legend.position = "top",
+        legend.title=element_blank(),
+        text=element_text(size=16,  family="sans"),
+        panel.border = element_blank(),
+        panel.background = element_rect(fill = "white",
+                                        #colour = "black",
+                                        #size = 0.5, linetype = "solid"
+        ),
+        panel.grid.major.x = element_line(size = 0.5, linetype = 2,
+                                          colour = "gray"))+
+  coord_flip()
+p3.INTBRSCI
+
+# distribution for mean differences
+
+p4.INTBRSCI<-
+  ggplot(p4, aes(x=xvar,fill="black")) + 
+  geom_density(alpha=.75) + 
+  scale_fill_manual(values="black")+
+  #scale_fill_manual(values=c("turquoise3","orangered2","black")) + 
+  xlab("")+
+  ylab("Density")+
+  ylim(c(0,6))+
+  xlim(c(min.y.narrow,max.y.narrow))+
+  theme_bw()+
+  theme(legend.position = "none",
+        legend.title=element_blank(),
+        text=element_text(size=16,  family="sans"),
+        panel.border = element_blank(),
+        panel.background = element_rect(fill = "white",
+                                        #colour = "black",
+                                        #size = 0.5, linetype = "solid"
+        ),
+        panel.grid.major.x = element_line(size = 0.5, linetype = 2,
+                                          colour = "gray"))+
+  coord_flip()
+p4.INTBRSCI
+
+# combine component-specific predictions
+
+p13.INTBRSCI<-
+  ggarrange(p1.INTBRSCI, p3.INTBRSCI,common.legend = T,
+            ncol=2, nrow=1,widths=c(4,1.4)
+  )
+
+# combine difference score predictions
+
+p24.INTBRSCI<-
+  ggarrange(p2.INTBRSCI, p4.INTBRSCI,
+            ncol=2, nrow=1,widths=c(4,1.4)
+  )
+
+pall.INTBRSCI<-
+  ggarrange(p13.INTBRSCI,p24.INTBRSCI,align = "hv",
+            ncol=1,nrow=2,heights=c(2,1))
+pall.INTBRSCI
+
+
+png(filename = 
+      "../results/pall.INTBRSCI.png",
+    units = "cm",
+    width = 21.0,height=29.7*(4/5),res = 600)
+pall.INTBRSCI
+dev.off()
+
+#' 
+#' # Session Information
+#' 
+## ---------------------------------------------------------------------------------------
+s<-sessionInfo()
+print(s,locale=F)
+
