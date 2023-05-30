@@ -8,7 +8,7 @@
 #'     keep_md: yes
 #' ---
 #' 
-## ----setup, include=FALSE-------------------------------------------------------------
+## ----setup, include=FALSE------------------------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
 
 #' 
@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 #' 
 #' ## Load packages
 #' 
-## ----message=FALSE, warning=FALSE-----------------------------------------------------
+## ----message=FALSE, warning=FALSE----------------------------------------------------------
 library(multid)
 library(lmerTest)
 library(rio)
@@ -35,7 +35,7 @@ source("../../custom_functions.R")
 #' 
 #' Data (originally used in Falk & Hermle, 2018) is openly available at www.briq-institute.org/global-preferences/home
 #' 
-## -------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------
 
 dat.ex2 <- import("../data/Raw/individual_new.dta")
 
@@ -43,14 +43,14 @@ dat.ex2 <- import("../data/Raw/individual_new.dta")
 #' 
 #' Import also pre-calculated indices of gender equality index (GEI)
 #' 
-## -------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------
 GEI <- 
   import("../data/Processed/GEI.xlsx")
 
 #' 
 #' ## Compile country-level data
 #' 
-## -------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------
 
 men<-dat.ex2 %>%
   group_by(isocode) %>%
@@ -70,7 +70,7 @@ women<-dat.ex2 %>%
 #' 
 #' Combine these with each other and with country-level GEI
 #' 
-## -------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------
 country.dat.ex2<-left_join(
   x=men,
   y=women,
@@ -91,7 +91,7 @@ country.dat.ex2<-
 #' 
 #' 3.  Obtain the coefficients for gender as sex difference for each country
 #' 
-## -------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------
 
 countries<-unique(dat.ex2$isocode)
 
@@ -145,7 +145,7 @@ dat.ex2$sex.c<-(-1)*(dat.ex2$gender-0.5)
 #' 
 #' ## Data exclusions and transformations
 #' 
-## -------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------
 fdat<-dat.ex2 %>%
   dplyr::select(patience,sex.c,country,GEI,age,subj_math_skills) %>%
   na.omit() %>%
@@ -156,7 +156,7 @@ fdat<-dat.ex2 %>%
 #' 
 #' ## Reliability of the difference score
 #' 
-## -------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------
 
 reliab.patience<-
   reliability_dms(
@@ -177,7 +177,7 @@ reliab.patience
 #' 
 #' ### Fit model
 #' 
-## ----message=FALSE--------------------------------------------------------------------
+## ----message=FALSE-------------------------------------------------------------------------
 
 fit_patience<-
   ddsc_ml(data = fdat,predictor = "GEI",
@@ -189,7 +189,7 @@ fit_patience<-
 #' 
 #' ### Descriptive statistics
 #' 
-## -------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------
 export(rownames_to_column(data.frame(fit_patience$descriptives)),
        "../results/patience_ml_desc.xlsx",
        overwrite=T)
@@ -199,7 +199,7 @@ round(fit_patience$SDs,2)
 #' 
 #' ### Variance heterogeneity test
 #' 
-## -------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------
 export(t(data.frame(fit_patience$re_cov_test)),
        "../results/patience_ml_var_test.xlsx",
        overwrite=T)
@@ -208,7 +208,7 @@ round(fit_patience$re_cov_test,3)
 #' 
 #' ### Component correlation
 #' 
-## -------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------
 export(rownames_to_column(data.frame(fit_patience$ddsc_sem_fit$variance_test)),
        "../results/patience_ml_comp_cor.xlsx",
        overwrite=T)
@@ -217,7 +217,7 @@ round(fit_patience$ddsc_sem_fit$variance_test,3)
 #' 
 #' ### Deconstructing results
 #' 
-## -------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------
 export(rownames_to_column(data.frame(fit_patience$results)),
        "../results/patience_ml_results.xlsx",
        overwrite=T)
@@ -226,7 +226,7 @@ round(fit_patience$results,3)
 #' 
 #' ### Multi-level model output
 #' 
-## -------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------
 # cross-level interaction model
 summary(fit_patience$model)
 
@@ -240,13 +240,13 @@ summary(fit_patience$reduced_model)
 #' 
 #' The model is already stored within the multi-level model object.
 #' 
-## -------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------
 fit_patience_sem<-fit_patience$ddsc_sem_fit
 
 #' 
 #' ### Results
 #' 
-## -------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------
 export(rownames_to_column(data.frame(fit_patience_sem$results)),
        "../results/patience_sem_results.xlsx",
        overwrite=T)
@@ -255,7 +255,7 @@ round(fit_patience_sem$results,3)
 #' 
 #' # Plotting the results
 #' 
-## -------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------
 # start with obtaining predicted values for means and differences
 
 ml_patience<-fit_patience$model
@@ -356,6 +356,7 @@ max.y.narrow<-
 
 # scaled simple effects to the plot
 
+
 pvals<-p_coding(c(fit_patience$results["b_21","p.value"],
                     fit_patience$results["b_11","p.value"]))
 
@@ -363,8 +364,12 @@ ests<-
   round_tidy(c(fit_patience$results["b_21","estimate"],
                fit_patience$results["b_11","estimate"]),2)
 
-coef1<-paste0("b21 = ",ests[1],", p = ",pvals[1])
-coef2<-paste0("b11 = ",ests[2],", p = ",pvals[2])
+coef1<-paste0("b21 = ",ests[1],", p ",
+               ifelse(fit_patience$results["b_21","p.value"]<.001,
+                      "","="),pvals[1])
+coef2<-paste0("b11 = ",ests[2],", p ",
+               ifelse(fit_patience$results["b_11","p.value"]<.001,
+                      "","="),pvals[2])
 
 coef_q<-round_tidy(fit_patience$results["q_b11_b21","estimate"],2)
 coef_q<-paste0("q_b = ",coef_q,", p ",
@@ -520,7 +525,7 @@ dev.off()
 #' 
 #' # Session information
 #' 
-## -------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------
 s<-sessionInfo()
 print(s,locale=F)
 
