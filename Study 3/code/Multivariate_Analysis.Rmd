@@ -1,0 +1,507 @@
+---
+title: "Predicting cross-country variation in multivariate personality trait differences between men and women with country-level gender equality"
+output:
+  html_document: 
+    df_print: default
+    toc: yes
+    number_sections: yes
+    keep_md: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Preparations
+
+## Load packages
+
+```{r message=FALSE}
+library(multid)
+library(lmerTest)
+library(rio)
+library(dplyr)
+library(tibble)
+library(ggpubr)
+library(ggplot2)
+library(MetBrewer)
+library(emmeans)
+library(finalfit)
+source("../../custom_functions.R")
+```
+
+## Import data
+
+
+```{r}
+
+dat <- import("../data/ipip_processed.rda")
+correlates <- import("../data/correlates.xlsx")
+
+```
+
+## Save variable names of the multivariate set to a vector
+
+```{r}
+per.facets<-
+  names(dat)[which(names(dat)=="A.trust"):
+              which(names(dat)=="O.liberalism")]
+```
+
+## Standardize country-level predictors
+
+```{r}
+# save raw values for plotting
+correlates$GenderGapIndex.raw<-correlates$GenderGapIndex
+# standardize
+correlates$GenderGapIndex<-
+  scale(correlates$GenderGapIndex, center = T, scale=T)
+
+```
+
+# Analysis
+
+## Obtaining regularized D sex differences and difference score components
+
+```{r}
+set.seed(84363)
+Diff_scores<-
+  D_regularized(data=dat,
+                mv.vars = per.facets,
+                group.var = "SEX",
+                group.values = c("Male","Female"),
+                rename.output = T,out = T,pcc = T,
+                auc = T,pred.prob = T,
+                size = round(min(table(dat$COUNTRY,
+                                       dat$SEX))/2,0),
+                fold = T,fold.var = "COUNTRY")
+
+round(Diff_scores$D,2)
+
+# Save difference score components and differences to a data frame
+D_dat<-Diff_scores$D
+
+# Save predicted values for individuals
+ML_dat<-Diff_scores$preds
+
+# rename variables
+D_dat$Country<-rownames(D_dat)
+names(ML_dat)<-c("sex","Country","FM","P","cut.groups")
+
+# calculate within country sex ratio (as proportion of men within country)
+D_dat$sex.ratio<-
+  D_dat$n.Male/(D_dat$n.Male+D_dat$n.Female)
+
+# print and save the coefficient weights
+coef(Diff_scores$cv.mod,s = "lambda.min")
+
+export(rownames_to_column(data.frame(coef(Diff_scores$cv.mod,
+            s = "lambda.min")[,1])),
+       "../results/elastic_net_coefs.xlsx",
+       overwrite=T)
+
+```
+
+## Merge correlates to the data files
+
+```{r}
+D_dat<-left_join(x=D_dat,
+                 y=correlates,
+                 by="Country")
+
+ML_dat<-left_join(x=ML_dat,
+                  y=D_dat,
+                  by="Country")
+```
+
+## Preparations for the multilevel analysis
+
+```{r}
+
+# make sex variable numeric
+ML_dat$Sex<-ifelse(ML_dat$sex=="Female",-0.5,0.5)
+
+# scale FM with the total pooled SD
+ML_dat$FM<-ML_dat$FM/D_dat$pooled.sd.total[1]
+
+# exclude missing values
+fdat <- ML_dat %>%
+  dplyr::select("Sex","FM","Country","sex.ratio",
+                "GenderGapIndex","GenderGapIndex.raw") %>%
+  na.omit()
+
+```
+# Analysis
+
+## Reliability of the difference score
+
+```{r}
+
+reliab.FM<-
+  reliability_dms(data=fdat,diff_var="Sex",var = "FM",
+                  diff_var_values = c(0.5,-0.5),group_var = "Country")
+
+export(t(data.frame(reliab.FM)),
+       "../results/reliab.FM.xlsx",
+       overwrite=T)
+reliab.FM
+```
+
+
+## Multi-level model
+
+### Fit model
+
+```{r}
+
+fit_FM<-
+  ddsc_ml(data = fdat,predictor = "GenderGapIndex",
+          covariates="sex.ratio",
+          moderator = "Sex",moderator_values=c(0.5,-0.5),
+          DV = "FM",lvl2_unit = "Country",re_cov_test = T,
+          scaling_sd = "observed")
+```
+
+### Descriptive statistics
+
+```{r}
+export(rownames_to_column(data.frame(fit_FM$descriptives)),
+       "../results/FM_ml_desc.xlsx",
+       overwrite=T)
+round(fit_FM$descriptives,2)
+round(fit_FM$SDs,2)
+```
+
+### Variance heterogeneity test
+
+```{r}
+export(t(data.frame(fit_FM$re_cov_test)),
+       "../results/FM_ml_var_test.xlsx",
+       overwrite=T)
+round(fit_FM$re_cov_test,3)
+```
+
+### Component correlation
+
+```{r}
+export(rownames_to_column(data.frame(fit_FM$ddsc_sem_fit$variance_test)),
+       "../results/FM_ml_comp_cor.xlsx",
+       overwrite=T)
+round(fit_FM$ddsc_sem_fit$variance_test,3)
+```
+
+### Deconstructing results
+
+```{r}
+export(rownames_to_column(data.frame(fit_FM$results)),
+       "../results/FM_ml_results.xlsx",
+       overwrite=T)
+round(fit_FM$results,3)
+```
+
+### Multi-level model output
+
+```{r}
+# cross-level interaction model
+summary(fit_FM$model)
+
+# reduced model without the predictor
+summary(fit_FM$reduced_model)
+```
+
+## Country-level path model
+
+### Fit the model
+
+The model is already stored within the multi-level model object. 
+
+```{r}
+fit_FM_sem<-fit_FM$ddsc_sem_fit
+```
+
+### Results
+
+```{r}
+export(rownames_to_column(data.frame(fit_FM_sem$results)),
+       "../results/FM_sem_results.xlsx",
+       overwrite=T)
+round(fit_FM_sem$results,3)
+```
+
+
+# Plotting the results
+
+```{r}
+# refit reduced and full models with GGGI in original scale
+
+ml_FM_red<-fit_FM$reduced_model
+  
+# refit the model with raw variable
+ml_FM<-
+  lmer(FM~Sex+
+         sex.ratio+
+         GenderGapIndex.raw+
+         Sex:GenderGapIndex.raw+
+         (Sex|Country),data=ML_dat,
+       control = lmerControl(optimizer="bobyqa",
+                             optCtrl=list(maxfun=2e6)))
+
+
+# point predictions as function of GGGI for components
+
+p<-
+  emmip(
+    ml_FM, 
+    Sex ~ GenderGapIndex.raw,
+    at=list(Sex = c(-0.5,0.5),
+            GenderGapIndex.raw=
+              seq(from=round(range(ML_dat$GenderGapIndex.raw)[1],2),
+                  to=round(range(ML_dat$GenderGapIndex.raw)[2],2),
+                  by=0.001)),
+    plotit=F,CIs=T,lmerTest.limit = 1e6,disable.pbkrtest=T)
+
+p$sex<-p$tvar
+levels(p$sex)<-c("Women","Men")
+
+# obtain min and max for aligned plots
+min.y.comp<-min(p$LCL)
+max.y.comp<-max(p$UCL)
+
+# Men and Women mean distributions
+
+p3<-coefficients(ml_FM_red)$Country
+p3<-cbind(rbind(p3,p3),weight=rep(c(-0.5,0.5),each=nrow(p3)))
+p3$xvar<-p3$`(Intercept)`+p3$sex.ratio*0.5+p3$Sex*p3$weight
+p3$sex<-as.factor(p3$weight)
+levels(p3$sex)<-c("Women","Men")
+
+# obtain min and max for aligned plots
+min.y.mean.distr<-min(p3$xvar)
+max.y.mean.distr<-max(p3$xvar)
+
+
+# obtain the coefs for the sex-effect (difference) as function of GGGI
+
+p2<-data.frame(
+  emtrends(ml_FM,var="Sex",
+           specs="GenderGapIndex.raw",
+           at=list(#Sex = c(-0.5,0.5),
+             GenderGapIndex.raw=
+               seq(from=round(range(ML_dat$GenderGapIndex.raw)[1],2),
+                   to=round(range(ML_dat$GenderGapIndex.raw)[2],2),
+                   by=0.001)),
+           lmerTest.limit = 1e6,disable.pbkrtest=T))
+
+p2$yvar<-p2$Sex.trend
+p2$xvar<-p2$GenderGapIndex.raw
+p2$LCL<-p2$lower.CL
+p2$UCL<-p2$upper.CL
+
+# obtain min and max for aligned plots
+min.y.diff<-min(p2$LCL)
+max.y.diff<-max(p2$UCL)
+
+# difference score distribution
+
+p4<-coefficients(ml_FM_red)$Country
+p4$xvar=(+1)*p4$Sex
+
+# obtain mix and max for aligned plots
+
+min.y.diff.distr<-min(p4$xvar)
+max.y.diff.distr<-max(p4$xvar)
+
+# define mins and maxs
+
+min.y.pred<-
+  ifelse(min.y.comp<min.y.mean.distr,min.y.comp,min.y.mean.distr)
+
+max.y.pred<-
+  ifelse(max.y.comp>max.y.mean.distr,max.y.comp,max.y.mean.distr)
+
+min.y.narrow<-
+  ifelse(min.y.diff<min.y.diff.distr,min.y.diff,min.y.diff.distr)
+
+max.y.narrow<-
+  ifelse(max.y.diff>max.y.diff.distr,max.y.diff,max.y.diff.distr)
+
+
+# Figures 
+
+# p1
+
+# scaled simple effects to the plot
+
+pvals<-p_coding(c(fit_FM$results["b_21","p.value"],
+                    fit_FM$results["b_11","p.value"]))
+
+ests<-
+  round_tidy(c(fit_FM$results["b_21","estimate"],
+               fit_FM$results["b_11","estimate"]),2)
+
+coef1<-paste0("b21 = ",ests[1],", p ",
+               ifelse(fit_FM$results["b_21","p.value"]<.001,
+                      "","="),pvals[1])
+coef2<-paste0("b11 = ",ests[2],", p ",
+               ifelse(fit_FM$results["b_11","p.value"]<.001,
+                      "","="),pvals[2])
+
+coef_q<-round_tidy(fit_FM$results["q_b11_b21","estimate"],2)
+coef_q<-paste0("q_b = ",coef_q,", p ",
+               ifelse(fit_FM$results["interaction","p.value"]<.001,"","="),
+               p_coding(fit_FM$results["interaction","p.value"]))
+
+coefs<-data.frame(sex=c("Women","Men"),
+                  coef=c(coef1,coef2))
+
+p1.FM<-ggplot(p,aes(y=yvar,x=xvar,color=sex))+
+  geom_point(size=3)+
+  geom_errorbar(aes(ymin=LCL, ymax=UCL),alpha=0.5)+
+  xlab("Global Gender Gap Index")+
+  #ylim=c(2.3,3.9)+
+  ylim(c(min.y.pred,max.y.pred))+
+  ylab("Personality FM Mean-Level")+
+  scale_color_manual(values=met.brewer("Archambault")[c(6,2)])+
+  theme(legend.position = "top",
+        legend.title=element_blank(),
+        text=element_text(size=16,  family="sans"),
+        panel.background = element_rect(fill = "white",
+                                        #colour = "black",
+                                        #size = 0.5, linetype = "solid"
+        ),
+        panel.grid.major.x = element_line(linewidth = 0.5, linetype = 2,
+                                          colour = "gray"))+
+  geom_text(data = coefs,show.legend=F,
+            aes(label=coef,x=0.63,
+                y=c(0.1
+                    ,0.0),size=14,hjust="left"))+
+  geom_text(inherit.aes=F,aes(x=0.63,y=-0.1,
+                              label=coef_q,size=14,hjust="left"),
+            show.legend=F)
+p1.FM
+
+# prediction plot for difference score
+
+
+pvals2<-p_coding(fit_FM$results["r_xy1y2","p.value"])
+
+ests2<-
+  round_tidy(fit_FM$results["r_xy1y2","estimate"],2)
+
+coefs2<-paste0("r = ",ests2,
+               ", p ",
+               ifelse(fit_FM$results["r_xy1y2","p.value"]<.001,"","="),
+               pvals2)
+
+
+p2.FM<-ggplot(p2,aes(y=yvar,x=xvar))+
+  geom_point(size=3)+
+  geom_errorbar(aes(ymin=LCL, ymax=UCL),alpha=0.5)+
+  xlab("Global Gender Gap Index")+
+  ylim(c(min.y.narrow,max.y.narrow))+
+  ylab("Difference in Personality FM")+
+  #scale_color_manual(values=met.brewer("Archambault")[c(6,2)])+
+  theme(legend.position = "right",
+        legend.title=element_blank(),
+        text=element_text(size=16,  family="sans"),
+        panel.background = element_rect(fill = "white",
+                                        #colour = "black",
+                                        #size = 0.5, linetype = "solid"
+        ),
+        panel.grid.major.x = element_line(size = 0.5, linetype = 2,
+                                          colour = "gray"))+
+  #geom_text(coef2,aes(x=0.63,y=min(p2$LCL)))
+  geom_text(data = data.frame(coefs2),show.legend=F,
+            aes(label=coefs2,x=0.63,hjust="left",
+                y=c(round(min(p2$LCL),2)),size=14))
+p2.FM
+
+# mean-level distributions
+
+p3.FM<-
+  ggplot(p3, aes(x=xvar, fill=sex)) + 
+  geom_density(alpha=.75) + 
+  scale_fill_manual(values=met.brewer("Archambault")[c(6,2)])+
+  #scale_fill_manual(values=c("turquoise3","orangered2","black")) + 
+  xlab("")+
+  ylab("Density")+
+  ylim(c(0,4))+
+  xlim(c(min.y.pred,max.y.pred))+
+  theme_bw()+
+  theme(legend.position = "top",
+        legend.title=element_blank(),
+        text=element_text(size=16,  family="sans"),
+        panel.border = element_blank(),
+        panel.background = element_rect(fill = "white",
+                                        #colour = "black",
+                                        #size = 0.5, linetype = "solid"
+        ),
+        panel.grid.major.x = element_line(size = 0.5, linetype = 2,
+                                          colour = "gray"))+
+  coord_flip()
+p3.FM
+
+# distribution for mean differences
+
+p4.FM<-
+  ggplot(p4, aes(x=xvar,fill="black")) + 
+  geom_density(alpha=.75) + 
+  scale_fill_manual(values="black")+
+  #scale_fill_manual(values=c("turquoise3","orangered2","black")) + 
+  xlab("")+
+  ylab("Density")+
+  ylim(c(0,4))+
+  xlim(c(min.y.narrow,max.y.narrow))+
+  theme_bw()+
+  theme(legend.position = "none",
+        legend.title=element_blank(),
+        text=element_text(size=16,  family="sans"),
+        panel.border = element_blank(),
+        panel.background = element_rect(fill = "white",
+                                        #colour = "black",
+                                        #size = 0.5, linetype = "solid"
+        ),
+        panel.grid.major.x = element_line(size = 0.5, linetype = 2,
+                                          colour = "gray"))+
+  coord_flip()
+p4.FM
+
+# combine component-specific predictions
+
+p13.FM<-
+  ggarrange(p1.FM, p3.FM,common.legend = T,
+            ncol=2, nrow=1,widths=c(4,1.4)
+  )
+
+p13.FM
+
+# combine difference score predictions
+
+p24.FM<-
+  ggarrange(p2.FM, p4.FM,
+            ncol=2, nrow=1,widths=c(4,1.4)
+  )
+
+p24.FM
+
+
+pall.FM<-
+  ggarrange(p13.FM,p24.FM,align = "hv",
+            ncol=1,nrow=2,heights=c(2,1))
+pall.FM
+
+png(filename = 
+      "../results/pall.FM.png",
+    units = "cm",
+    width = 21.0,height=29.7*(4/5),res = 600)
+pall.FM
+dev.off()
+```
+
+# Session information
+
+```{r}
+s<-sessionInfo()
+print(s,locale=F)
+```
+

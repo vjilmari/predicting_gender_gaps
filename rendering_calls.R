@@ -71,8 +71,6 @@ purl(input="Study 2/code/Analysis_patience.Rmd",
      documentation = 2)
 
 
-
-
 ## Study 3
 
 ### Multivariate
