@@ -1,7 +1,6 @@
 # Demonstrate the patterns that appear as correlation with a difference score
 # from the point of view of divergence, convergence, and their mix
 
-
 # Load packages
 library(ggplot2)
 library(ggpubr)
@@ -40,19 +39,16 @@ plot.dat.A<-data.frame(
   DV=c(dat.A$Y1,dat.A$Y2,dat.A$diff),
   type=rep(c("Mean for Men","Mean for Women","Difference = Men - Women"),each=n)
 )
-str(plot.dat.A)
 
 plot.A<-
   ggplot(plot.dat.A,
        aes(x=Predictor,y=DV,fill=type,color=type,linetype=type))+
-  geom_smooth(method="lm",formula="y~x",se=F,size=3)+
+  geom_smooth(method="lm",formula="y~x",se=F,linewidth=3)+
   stat_cor(aes(color = type),r.digits=2,
            p.digits=3,label.x = c(-2.5,-2.5,-2.5),label.y = c(5,4.5,4),
            cor.coef.name="r",r.accuracy=0.01,p.accuracy=0.001)+
   scale_color_manual(values=c("black","turquoise3","orangered2"))+
-  #scale_color_manual(values=c(met.brewer("Archambault")[c(6,2)],"black"))+
   scale_linetype_manual(values=c("solid","solid","solid"))+
-  #geom_point(size=1,alpha=0.2)+
   theme_bw()+
   theme(legend.position = "top",
         legend.background = element_rect(fill = "white"))+
@@ -62,8 +58,6 @@ plot.A<-
   xlab("Gender-equality")+
   coord_cartesian(ylim=c(-4,5))
 plot.A
-
-
 
 # Type A2: opposite but equal associations with Y1 and Y2, convergence
 
@@ -92,12 +86,11 @@ plot.dat.A2<-data.frame(
   DV=c(dat.A2$Y1,dat.A2$Y2,dat.A2$diff),
   type=rep(c("Mean for Men","Mean for Women","Difference = Men - Women"),each=n)
 )
-str(plot.dat.A2)
 
 plot.A2<-
   ggplot(plot.dat.A2,
          aes(x=Predictor,y=DV,fill=type,color=type,linetype=type))+
-  geom_smooth(method="lm",formula="y~x",se=F,size=3)+
+  geom_smooth(method="lm",formula="y~x",se=F,linewidth=3)+
   stat_cor(aes(color = type),r.digits=2,
            p.digits=3,label.x = c(-2.5,-2.5,-2.5),label.y = c(5,4.5,4),
            cor.coef.name="r",r.accuracy=0.01,p.accuracy=0.001)+
@@ -142,12 +135,12 @@ plot.dat.A3<-data.frame(
   DV=c(dat.A3$Y1,dat.A3$Y2,dat.A3$diff),
   type=rep(c("Mean for Men","Mean for Women","Difference = Men - Women"),each=n)
 )
-str(plot.dat.A3)
+
 
 plot.A3<-
   ggplot(plot.dat.A3,
          aes(x=Predictor,y=DV,fill=type,color=type,linetype=type))+
-  geom_smooth(method="lm",formula="y~x",se=F,size=3)+
+  geom_smooth(method="lm",formula="y~x",se=F,linewidth=3)+
   stat_cor(aes(color = type),r.digits=2,
            p.digits=3,label.x = c(-2.5,-2.5,-2.5),label.y = c(5,4.5,4),
            cor.coef.name="r",r.accuracy=0.01,p.accuracy=0.001)+
@@ -164,8 +157,6 @@ plot.A3<-
   xlab("Gender-equality")+
   coord_cartesian(ylim=c(-4,5))
 plot.A3
-
-
 
 # combined plot from data
 
@@ -185,13 +176,12 @@ plot.dat.comb$panel <- factor(plot.dat.comb$panel,
 plot.comb<-
   ggplot(plot.dat.comb,
          aes(x=Predictor,y=DV,fill=type,color=type,linetype=type))+
-  geom_smooth(method="lm",formula="y~x",se=F,size=3)+
+  geom_smooth(method="lm",formula="y~x",se=F,linewidth=3)+
   stat_cor(aes(color = type),r.digits=2,
            p.digits=3,label.x = c(-2.5,-2.5,-2.5),label.y = c(5,4.5,4),
            cor.coef.name="r",r.accuracy=0.01,p.accuracy=0.001)+
   scale_color_manual(values=c("black","turquoise3","orangered2"))+
   scale_linetype_manual(values=c("solid","solid","solid"))+
-  #geom_point(size=1,alpha=0.2)+
   theme_bw()+
   theme(legend.position = "bottom",
         legend.background = element_rect(fill = "white"))+
@@ -199,14 +189,11 @@ plot.comb<-
        linetype = "DV type: ",
        fill = "DV type: ")+
   xlab("Gender-equality")+
-  #coord_cartesian(ylim=c(-2.5,5))+
   facet_wrap(~panel,nrow = 1)+
-  guides(fill="none",linetype="none")#+
-  #geom_segment(mapping=aes(x=0, y=-0.75, xend=0, yend=0.75),
-  #             arrow=arrow(ends='both'), size=0.75, color="black")
+  guides(fill="none",linetype="none")
 plot.comb
 
-
+# save the plot
 ggplot2::ggsave(plot.comb,path = "illustrations",
                 filename = "Figure_Divergence_Convergence.png",
                 device = "png",units = "cm",
@@ -216,7 +203,6 @@ ggplot2::ggsave(plot.comb,path = "illustrations",
 
 # produce a reduced plot with only the black lines
 
-
 plot.comb.red<-
   ggplot(plot.dat.comb[plot.dat.comb$type=="Difference = Men - Women",],
          aes(x=Predictor,y=DV))+
@@ -225,27 +211,22 @@ plot.comb.red<-
            p.digits=3,label.x = c(-2.5,-2.5,-2.5),
            label.y = c(5,4.5,4),
            cor.coef.name="r",r.accuracy=0.01,p.accuracy=0.001)+
-  #scale_color_manual(values=c("turquoise3","orangered2","black"))+
-  #scale_linetype_manual(values=c("solid","solid","solid"))+
-  #geom_point(size=1,alpha=0.2)+
   theme_bw()+
   theme(legend.position = "bottom",
         legend.background = element_rect(fill = "white"))+
   labs(color = "DV type: ",
        linetype = "DV type: ",
        fill = "DV type: ")+
-  #coord_cartesian(ylim=c(-2,5))+
   facet_wrap(~panel,nrow = 1)+
   xlab("Gender-equality")+
   ylab("Difference: Men - Women")+
-  guides(fill="none",linetype="none")#+
-#geom_segment(mapping=aes(x=0, y=-0.75, xend=0, yend=0.75),
-#             arrow=arrow(ends='both'), size=0.75, color="black")
+  guides(fill="none",linetype="none")
 plot.comb.red
 
+# saving commented out
 
-ggplot2::ggsave(plot.comb.red,path = "illustrations",
-                filename = "Figure_Divergence_Convergence_no_slopes.png",
-                device = "png",units = "cm",
-                width = 21*(4/4),
-                height = 29.7/2,dpi = 300)
+#ggplot2::ggsave(plot.comb.red,path = "illustrations",
+#                filename = "Figure_Divergence_Convergence_no_slopes.png",
+#                device = "png",units = "cm",
+#                width = 21*(4/4),
+#                height = 29.7/2,dpi = 300)

@@ -4,6 +4,7 @@ library(ggplot2)
 library(MetBrewer)
 library(metafor)
 
+# define a function for difference score correlation
 diff_score_corr<-
   function(SD_Y1,SD_Y2,r_Y1Y2,r_XY1,r_XY2){
     ds_corr<-
@@ -18,12 +19,17 @@ diff_score_corr<-
     return(output)
   }
 
+# test if it works
 a<-c(SD_Y1=1,SD_Y2=1,r_Y1Y2=-0.99,r_XY1=0.10,r_XY2=(-0.10))
 
 
 diff_score_corr(SD_Y1=a["SD_Y1"],SD_Y2=a["SD_Y2"],
                 r_Y1Y2=a["r_Y1Y2"],
                 r_XY1=a["r_XY1"],r_XY2=a["r_XY2"])
+
+# generate a dataset with homogeneous unit variances
+# constant slopes and increasing degree of component correlation
+# from 0 to .98
 
 df<-
   data.frame(
@@ -34,6 +40,7 @@ df<-
     r_XY2=(-0.10)
   )
 
+# save difference score correlation estimates for all combinations
 estimates<-list()
 
 for (i in 1:nrow(df)){
@@ -42,16 +49,20 @@ for (i in 1:nrow(df)){
                     r_Y1Y2=df[i,"r_Y1Y2"],
                     r_XY1=df[i,"r_XY1"],r_XY2=df[i,"r_XY2"])
 }
-estimates
+
+# save to a data frame
 estimates.df<-do.call(rbind,estimates)
-estimates.df
+head(estimates.df)
+
+# plot the results
+# combine generated data and difference score correlation estimates
 
 plot.df<-
   cbind(df,estimates.df)
 head(plot.df)
 tail(plot.df,n=10)
 
-
+# produce the plot
 plot<-
   ggplot(plot.df,aes(x=r_Y1Y2,y=ds_corr))+
   geom_line(color=met.brewer("Archambault")[2],linewidth=2)+
@@ -80,7 +91,7 @@ plot<-
         panel.grid.major = element_line(linewidth = 0.2,color="black", linetype = 3))
 plot  
 
-
+# save the file
 png(filename = 
       "illustrations/Figure_component_correlation_influence.png",
     units = "cm",

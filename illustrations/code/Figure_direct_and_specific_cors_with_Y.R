@@ -40,9 +40,6 @@ plot.dat.A<-data.frame(
 )
 
 
-
-str(plot.dat.A)
-
 plot.A<-
   ggplot(plot.dat.A,
        aes(x=Predictor,y=DV,fill=type,color=type,linetype=type))+
@@ -65,8 +62,6 @@ plot.A<-
 plot.A
 
 # Type B: Boundary condition for Y2, association only between Y1 and X
-
-# correlation matrix (Y1,Y2,X)
 
 cor.B<-matrix(c(
   1.00,0.50,0.50,
@@ -116,8 +111,6 @@ plot.B
 
 # Type C: Heterogeneity in magnitudes
 
-# correlation matrix (Y1,Y2,X)
-
 cor.C<-matrix(c(
   1.00,0.50,0.75,
   0.50,1.00,0.25,
@@ -141,7 +134,6 @@ plot.dat.C<-data.frame(
   DV=c(dat.C$Y1,dat.C$Y2,dat.C$diff),
   type=rep(c("Mean for Men","Mean for Women","Difference = Men - Women"),each=n)
 )
-str(plot.dat.C)
 
 plot.C<-
   ggplot(plot.dat.C,
@@ -164,9 +156,7 @@ plot.C<-
 plot.C
 
 
-# Type D: Boundary condition for Y2, association only between Y1 and X
-
-# correlation matrix (Y1,Y2,X)
+# Type D
 
 cor.D<-matrix(c(
   1.00,0.90,0.111,
@@ -193,7 +183,6 @@ plot.dat.D<-data.frame(
   DV=c(dat.D$Y1,dat.D$Y2,dat.D$diff),
   type=rep(c("Mean for Men","Mean for Women","Difference = Men - Women"),each=n)
 )
-str(plot.dat.D)
 
 plot.D<-
   ggplot(plot.dat.D,
@@ -215,7 +204,6 @@ plot.D<-
   xlab("Gender-equality")+
   coord_cartesian(ylim=c(-2.5,5))
 plot.D
-
 
 # combined plot from data
 
@@ -239,7 +227,6 @@ plot.comb<-
            cor.coef.name="r",r.accuracy=0.01,p.accuracy=0.001)+
   scale_color_manual(values=c("black","turquoise3","orangered2"))+
   scale_linetype_manual(values=c("solid","solid","solid"))+
-  #geom_point(size=1,alpha=0.2)+
   theme_bw()+
   theme(legend.position = "bottom",
         legend.background = element_rect(fill = "white"))+
@@ -247,23 +234,19 @@ plot.comb<-
        linetype = "DV type: ",
        fill = "DV type: ")+
   xlab("Gender-equality")+
-  #coord_cartesian(ylim=c(-2.5,5))+
   facet_wrap(~panel,nrow = 1)+
-  guides(fill="none",linetype="none")#+
-  #geom_segment(mapping=aes(x=0, y=-0.75, xend=0, yend=0.75),
-  #             arrow=arrow(ends='both'), size=0.75, color="black")
+  guides(fill="none",linetype="none")
 plot.comb
 
 
+# save the plot
 ggplot2::ggsave(plot.comb,path = "illustrations",
                 filename = "Figure_Types_ABCD.png",
                 device = "png",units = "cm",
                 width = 21*(4/4),
                 height = 29.7/2,dpi = 300)
 
-# reduced plot
-names(plot.dat.comb)
-table(plot.dat.comb$type)
+# reduced plot (only difference score slopes)
 
 plot.comb.red<-
   ggplot(plot.dat.comb[plot.dat.comb$type=="Difference = Men - Women",],
@@ -273,9 +256,6 @@ plot.comb.red<-
            p.digits=3,label.x = c(-2.5,-2.5,-2.5),
            label.y = c(5,4.5,4),
            cor.coef.name="r",r.accuracy=0.01,p.accuracy=0.001)+
-  #scale_color_manual(values=c("turquoise3","orangered2","black"))+
-  #scale_linetype_manual(values=c("solid","solid","solid"))+
-  #geom_point(size=1,alpha=0.2)+
   theme_bw()+
   theme(legend.position = "bottom",
         legend.background = element_rect(fill = "white"))+
@@ -286,14 +266,13 @@ plot.comb.red<-
   facet_wrap(~panel,nrow = 1)+
   xlab("Gender-equality")+
   ylab("Difference: Men - Women")+
-  guides(fill="none",linetype="none")#+
-#geom_segment(mapping=aes(x=0, y=-0.75, xend=0, yend=0.75),
-#             arrow=arrow(ends='both'), size=0.75, color="black")
+  guides(fill="none",linetype="none")
 plot.comb.red
 
+# Saving commented out
 
-ggplot2::ggsave(plot.comb.red,path = "illustrations",
-                filename = "Figure_Types_ABCD_no_slopes.png",
-                device = "png",units = "cm",
-                width = 21*(4/4),
-                height = 29.7/2,dpi = 300)
+#ggplot2::ggsave(plot.comb.red,path = "illustrations",
+#                filename = "Figure_Types_ABCD_no_slopes.png",
+#                device = "png",units = "cm",
+#                width = 21*(4/4),
+#                height = 29.7/2,dpi = 300)

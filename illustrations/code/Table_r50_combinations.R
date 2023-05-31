@@ -1,7 +1,4 @@
 # exemplary table of constituent combinations leading to r = .50
-# specifically for GEP
-# this means positive correlations going to extreme values
-# illustrate the independence of the components for type B and C
 
 library(metafor)
 library(finalfit)
@@ -56,7 +53,6 @@ A_eq_tab
 # confirm that everything went correctly
 (r_xy1_A_eq*s_y1_A_eq-r_xy2_A_eq*s_y2_A_eq)/
   sqrt(s_y1_A_eq^2+s_y2_A_eq^2-2*r_y1y2_A_eq*s_y1_A_eq*s_y2_A_eq)
-
 
 # Type B patterns
 # with equal variances (make the one reversed separately)
@@ -304,63 +300,17 @@ D_eq_tab
 (r_xy1_D_eq*s_y1_D_eq-r_xy2_D_eq*s_y2_D_eq)/
   sqrt(s_y1_D_eq^2+s_y2_D_eq^2-2*r_y1y2_D_eq*s_y1_D_eq*s_y2_D_eq)
 
-# Type D patterns
-# with unequal variances
-
-s_y1_D_uneq=rep(1.25,1)
-s_y2_D_uneq=rep(0.75,1)
-r_y1y2_D_uneq=c(.98)
-
-## calculate denominators
-
-s_y1_y2_D_uneq=sqrt(s_y1_D_uneq^2+s_y2_D_uneq^2-2*r_y1y2_D_uneq*s_y1_D_uneq*s_y2_D_uneq)
-s_y1_y2_D_uneq
-
-## This gives: r_xy1 = 
-r_xy1_D_uneq<-
-  3*sqrt((-2)*r_y1y2_D_uneq*s_y1_D_uneq*s_y2_D_uneq+s_y1_D_uneq^2+s_y2_D_uneq^2)/
-  (6*s_y1_D_uneq+10*s_y2_D_uneq)
-r_xy1_D_uneq
-
-r_xy2_D_uneq=(-5/3)*r_xy1_D_uneq
-r_xy2_D_uneq
-
-q_D_uneq=transf.rtoz(r_xy1_D_uneq)-transf.rtoz(r_xy2_D_uneq)
-q_D_uneq
-
-pre_std_D_uneq=(r_xy1_D_uneq-r_xy2_D_uneq)/
-  sqrt(1^2+1^2-2*r_y1y2_D_uneq*1*1)
-pre_std_D_uneq
-
-
-D_uneq_tab<-
-  data.frame(
-    SD_y1=round_tidy(s_y1_D_uneq,2),
-    SD_y2=round_tidy(s_y2_D_uneq,2),
-    r_y1y2=round_tidy(r_y1y2_D_uneq,2),
-    'SD_y1-y2'=round_tidy(s_y1_y2_D_uneq,2),
-    r_xy1=round_tidy(r_xy1_D_uneq,2),
-    r_xy2=round_tidy(r_xy2_D_uneq,2),
-    'r_xy1-r_xy2'=round_tidy(r_xy1_D_uneq-r_xy2_D_uneq,2),
-    Cohens_q=round_tidy(q_D_uneq,2),
-    r_xy1y2=round_tidy(rep(.50,times=length(s_y1_D_uneq)),2),
-    pre_std=round_tidy(pre_std_D_uneq,2)
-  )
-
-D_uneq_tab
-
-# confirm that everything went correctly
-(r_xy1_D_uneq*s_y1_D_uneq-r_xy2_D_uneq*s_y2_D_uneq)/
-  sqrt(s_y1_D_uneq^2+s_y2_D_uneq^2-2*r_y1y2_D_uneq*s_y1_D_uneq*s_y2_D_uneq)
-
+# combine everything to same table
 comb_tab<-
-  rbind(A_eq_tab,#A_uneq_tab,
+  rbind(A_eq_tab,
       B_eq_tab,B_reveq_tab,
       C_eq_tab,C_reveq_tab,
-      D_eq_tab#,D_uneq_tab
+      D_eq_tab
       )
 names(comb_tab)
 comb_tab
+
+# specific formatting for correlation columns
 r_tabs<-c("r_y1y2","r_xy1","r_xy2","r_xy1y2")
 
 comb_tab<-
@@ -369,9 +319,11 @@ comb_tab<-
 
 comb_tab
 
+# include Type Letters
 comb_tab<-
   cbind(data.frame(Type=rep(LETTERS[1:4],c(6,12,10,4))),
       comb_tab)
 
+# save the table
 save_as_docx(nice_table(comb_tab),
              path="illustrations/Table_r50.docx")
