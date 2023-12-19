@@ -9,7 +9,7 @@ library(MetBrewer)
 
 # Parameters that apply for all scenarios
 
-n=300
+n=100
 
 # Type A: opposite but equal associations with Y1 and Y2
 
@@ -36,7 +36,7 @@ cor(dat.A)
 plot.dat.A<-data.frame(
   Predictor=rep(dat.A$X,times=3),
   DV=c(dat.A$Y1,dat.A$Y2,dat.A$diff),
-  type=rep(c("Mean for Men","Mean for Women","Difference = Men - Women"),each=n)
+  type=rep(c("SSE Mean for Men (Y1)","SSE Mean for Women (Y2)","SSE Difference (Y1-Y2) = SSE Mean for Men (Y1) - SSE Mean for Women (Y2)"),each=n)
 )
 
 
@@ -57,7 +57,7 @@ plot.A<-
   labs(color = "DV type",
        linetype = "DV type",
        fill = "DV type")+
-  xlab("Gender-equality")+
+  xlab("Gender-equality (X)")+
   coord_cartesian(ylim=c(-2.5,5))
 plot.A
 
@@ -84,7 +84,7 @@ cor(dat.B)
 plot.dat.B<-data.frame(
   Predictor=rep(dat.B$X,times=3),
   DV=c(dat.B$Y1,dat.B$Y2,dat.B$diff),
-  type=rep(c("Mean for Men","Mean for Women","Difference = Men - Women"),each=n)
+  type=rep(c("SSE Mean for Men (Y1)","SSE Mean for Women (Y2)","SSE Difference (Y1-Y2) = SSE Mean for Men (Y1) - SSE Mean for Women (Y2)"),each=n)
 )
 
 
@@ -104,7 +104,7 @@ plot.B<-
   labs(color = "DV type",
        linetype = "DV type",
        fill = "DV type")+
-  xlab("Gender-equality")+
+  xlab("Gender-equality (X)")+
   coord_cartesian(ylim=c(-2.5,5))
 plot.B
 
@@ -132,7 +132,7 @@ cor(dat.C)
 plot.dat.C<-data.frame(
   Predictor=rep(dat.C$X,times=3),
   DV=c(dat.C$Y1,dat.C$Y2,dat.C$diff),
-  type=rep(c("Mean for Men","Mean for Women","Difference = Men - Women"),each=n)
+  type=rep(c("SSE Mean for Men (Y1)","SSE Mean for Women (Y2)","SSE Difference (Y1-Y2) = SSE Mean for Men (Y1) - SSE Mean for Women (Y2)"),each=n)
 )
 
 plot.C<-
@@ -151,7 +151,7 @@ plot.C<-
   labs(color = "DV type",
        linetype = "DV type",
        fill = "DV type")+
-  xlab("Gender-equality")+
+  xlab("Gender-equality (X)")+
   coord_cartesian(ylim=c(-2.5,5))
 plot.C
 
@@ -181,7 +181,7 @@ round(c(cor(dat.D)[3,4],
 plot.dat.D<-data.frame(
   Predictor=rep(dat.D$X,times=3),
   DV=c(dat.D$Y1,dat.D$Y2,dat.D$diff),
-  type=rep(c("Mean for Men","Mean for Women","Difference = Men - Women"),each=n)
+  type=rep(c("SSE Mean for Men (Y1)","SSE Mean for Women (Y2)","SSE Difference (Y1-Y2) = SSE Mean for Men (Y1) - SSE Mean for Women (Y2)"),each=n)
 )
 
 plot.D<-
@@ -201,7 +201,7 @@ plot.D<-
   labs(color = "DV type",
        linetype = "DV type",
        fill = "DV type")+
-  xlab("Gender-equality")+
+  xlab("Gender-equality (X)")+
   coord_cartesian(ylim=c(-2.5,5))
 plot.D
 
@@ -229,14 +229,17 @@ plot.comb<-
   scale_linetype_manual(values=c("solid","solid","solid"))+
   theme_bw()+
   theme(legend.position = "bottom",
+        legend.direction = "vertical",
         legend.background = element_rect(fill = "white"))+
   labs(color = "DV type: ",
        linetype = "DV type: ",
        fill = "DV type: ")+
-  xlab("Gender-equality")+
+  xlab("Gender-equality (X)")+
   facet_wrap(~panel,nrow = 1)+
   guides(fill="none",linetype="none")
 plot.comb
+
+
 
 
 # save the plot
@@ -249,7 +252,7 @@ ggplot2::ggsave(plot.comb,path = "illustrations",
 # reduced plot (only difference score slopes)
 
 plot.comb.red<-
-  ggplot(plot.dat.comb[plot.dat.comb$type=="Difference = Men - Women",],
+  ggplot(plot.dat.comb[plot.dat.comb$type=="SSE Difference (Y1-Y2) = SSE Mean for Men (Y1) - SSE Mean for Women (Y2)",],
          aes(x=Predictor,y=DV))+
   geom_smooth(method="lm",formula="y~x",se=F,linewidth=3,color="black")+
   stat_cor(r.digits=2,
@@ -264,7 +267,7 @@ plot.comb.red<-
        fill = "DV type: ")+
   coord_cartesian(ylim=c(-2,5))+
   facet_wrap(~panel,nrow = 1)+
-  xlab("Gender-equality")+
+  xlab("Gender-equality (X)")+
   ylab("Difference: Men - Women")+
   guides(fill="none",linetype="none")
 plot.comb.red
@@ -276,3 +279,4 @@ plot.comb.red
 #                device = "png",units = "cm",
 #                width = 21*(4/4),
 #                height = 29.7/2,dpi = 300)
+

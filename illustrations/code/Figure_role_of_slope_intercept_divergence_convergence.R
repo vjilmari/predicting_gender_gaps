@@ -10,7 +10,7 @@ library(MetBrewer)
 
 # Parameters that apply for all scenarios
 
-n=300
+n=100
 
 # Type A1: opposite but equal associations with Y1 and Y2, divergence
 
@@ -37,7 +37,7 @@ cor(dat.A)
 plot.dat.A<-data.frame(
   Predictor=rep(dat.A$X,times=3),
   DV=c(dat.A$Y1,dat.A$Y2,dat.A$diff),
-  type=rep(c("Mean for Men","Mean for Women","Difference = Men - Women"),each=n)
+  type=rep(c("SSE Mean for Men (Y1)","SSE Mean for Women (Y2)","SSE Difference (Y1-Y2) = SSE Mean for Men (Y1) - SSE Mean for Women (Y2)"),each=n)
 )
 
 plot.A<-
@@ -55,7 +55,7 @@ plot.A<-
   labs(color = "DV type",
        linetype = "DV type",
        fill = "DV type")+
-  xlab("Gender-equality")+
+  xlab("Gender-equality (X)")+
   coord_cartesian(ylim=c(-4,5))
 plot.A
 
@@ -84,7 +84,7 @@ cor(dat.A2)
 plot.dat.A2<-data.frame(
   Predictor=rep(dat.A2$X,times=3),
   DV=c(dat.A2$Y1,dat.A2$Y2,dat.A2$diff),
-  type=rep(c("Mean for Men","Mean for Women","Difference = Men - Women"),each=n)
+  type=rep(c("SSE Mean for Men (Y1)","SSE Mean for Women (Y2)","SSE Difference (Y1-Y2) = SSE Mean for Men (Y1) - SSE Mean for Women (Y2)"),each=n)
 )
 
 plot.A2<-
@@ -104,7 +104,7 @@ plot.A2<-
   labs(color = "DV type",
        linetype = "DV type",
        fill = "DV type")+
-  xlab("Gender-equality")+
+  xlab("Gender-equality (X)")+
   coord_cartesian(ylim=c(-4,5))
 plot.A2
 
@@ -133,7 +133,7 @@ cor(dat.A3)
 plot.dat.A3<-data.frame(
   Predictor=rep(dat.A3$X,times=3),
   DV=c(dat.A3$Y1,dat.A3$Y2,dat.A3$diff),
-  type=rep(c("Mean for Men","Mean for Women","Difference = Men - Women"),each=n)
+  type=rep(c("SSE Mean for Men (Y1)","SSE Mean for Women (Y2)","SSE Difference (Y1-Y2) = SSE Mean for Men (Y1) - SSE Mean for Women (Y2)"),each=n)
 )
 
 
@@ -154,7 +154,7 @@ plot.A3<-
   labs(color = "DV type",
        linetype = "DV type",
        fill = "DV type")+
-  xlab("Gender-equality")+
+  xlab("Gender-equality (X)")+
   coord_cartesian(ylim=c(-4,5))
 plot.A3
 
@@ -184,15 +184,33 @@ plot.comb<-
   scale_linetype_manual(values=c("solid","solid","solid"))+
   theme_bw()+
   theme(legend.position = "bottom",
+        legend.direction = "vertical",
         legend.background = element_rect(fill = "white"))+
   labs(color = "DV type: ",
        linetype = "DV type: ",
        fill = "DV type: ")+
-  xlab("Gender-equality")+
+  xlab("Gender-equality (X)")+
   facet_wrap(~panel,nrow = 1)+
   guides(fill="none",linetype="none")
-plot.comb
 
+
+# Create a data frame with text for each panel
+text_data <- data.frame(panel = unique(plot.dat.comb$panel),
+                        text = c(
+                          paste0("\u0263[2]"," > 0"),
+                          paste0("\u0263[2]"," < 0"),
+                          paste0("\u0263[2]"," == 0")))
+
+# Add vertical arrow and text with different text for each panel
+plot.comb<-plot.comb + 
+  geom_segment(aes(x=0, xend=0, y=-0.75, yend=0.75),
+               arrow=arrow(length=unit(0.3,"cm"), ends = "both"),
+               color="black", linewidth=0.2,linetype=1) +
+  geom_text(data = text_data, inherit.aes = FALSE,
+            aes(x=0.2, y=ifelse(panel == "Mixture", -1.2, -0.2),
+                label=text),
+            hjust=0, vjust=0, parse=TRUE)
+plot.comb
 # save the plot
 ggplot2::ggsave(plot.comb,path = "illustrations",
                 filename = "Figure_Divergence_Convergence.png",
@@ -204,7 +222,7 @@ ggplot2::ggsave(plot.comb,path = "illustrations",
 # produce a reduced plot with only the black lines
 
 plot.comb.red<-
-  ggplot(plot.dat.comb[plot.dat.comb$type=="Difference = Men - Women",],
+  ggplot(plot.dat.comb[plot.dat.comb$type=="SSE Difference (Y1-Y2) = SSE Mean for Men (Y1) - SSE Mean for Women (Y2)",],
          aes(x=Predictor,y=DV))+
   geom_smooth(method="lm",formula="y~x",se=F,linewidth=3,color="black")+
   stat_cor(r.digits=2,
@@ -218,7 +236,7 @@ plot.comb.red<-
        linetype = "DV type: ",
        fill = "DV type: ")+
   facet_wrap(~panel,nrow = 1)+
-  xlab("Gender-equality")+
+  xlab("Gender-equality (X)")+
   ylab("Difference: Men - Women")+
   guides(fill="none",linetype="none")
 plot.comb.red
