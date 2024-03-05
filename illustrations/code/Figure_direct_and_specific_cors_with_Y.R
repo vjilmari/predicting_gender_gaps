@@ -22,6 +22,8 @@ cor.A<-matrix(c(
 ),ncol=3,byrow=T)
 cor.A
 
+set.seed(4216) 
+
 dat.A<-
   data.frame(mvrnorm(n=n,
                      mu = c(1,-1,0),
@@ -70,6 +72,7 @@ cor.B<-matrix(c(
 ),ncol=3,byrow=T)
 cor.B
 
+set.seed(4216)
 dat.B<-
   data.frame(mvrnorm(n=n,
                      mu = c(1,-1,0),
@@ -117,7 +120,7 @@ cor.C<-matrix(c(
   0.75,0.25,1.00
 ),ncol=3,byrow=T)
 cor.C
-
+set.seed(4216)
 dat.C<-
   data.frame(mvrnorm(n=n,
                      mu = c(1,-1,0),
@@ -164,7 +167,7 @@ cor.D<-matrix(c(
   0.111,-.111,1.00
 ),ncol=3,byrow=T)
 cor.D
-
+set.seed(4216)
 dat.D<-
   data.frame(mvrnorm(n=n,
                      mu = c(1,-1,0),
@@ -207,6 +210,30 @@ plot.D
 
 # combined plot from data
 
+# first shift the X values so that they occupy the same area in the figure
+range(plot.dat.A$Predictor)
+range(plot.dat.B$Predictor)
+range(plot.dat.C$Predictor)
+range(plot.dat.D$Predictor)
+
+# Desired range for normalized variables
+desired_min <- -2.5  # Set the minimum value of the range
+desired_max <- 2.5  # Set the maximum value of the range
+
+
+# Perform min-max normalization for each variable separately
+plot.dat.A$Predictor.norm<-((plot.dat.A$Predictor - min(plot.dat.A$Predictor)) / (max(plot.dat.A$Predictor) - min(plot.dat.A$Predictor))) * (desired_max - desired_min) + desired_min
+plot.dat.B$Predictor.norm<-((plot.dat.B$Predictor - min(plot.dat.B$Predictor)) / (max(plot.dat.B$Predictor) - min(plot.dat.B$Predictor))) * (desired_max - desired_min) + desired_min
+plot.dat.C$Predictor.norm<-((plot.dat.C$Predictor - min(plot.dat.C$Predictor)) / (max(plot.dat.C$Predictor) - min(plot.dat.C$Predictor))) * (desired_max - desired_min) + desired_min
+plot.dat.D$Predictor.norm<-((plot.dat.D$Predictor - min(plot.dat.D$Predictor)) / (max(plot.dat.D$Predictor) - min(plot.dat.D$Predictor))) * (desired_max - desired_min) + desired_min
+
+
+range(plot.dat.A$Predictor.norm)
+range(plot.dat.B$Predictor.norm)
+range(plot.dat.C$Predictor.norm)
+range(plot.dat.D$Predictor.norm)
+
+
 plot.dat.comb<-rbind(
   plot.dat.A,
   plot.dat.B,
@@ -218,10 +245,12 @@ plot.dat.comb$panel<-
   c(rep(c("Type A","Type B","Type C"),each=3*n),
     rep("Type D",3*n))
 
+
 plot.comb<-
   ggplot(plot.dat.comb,
-         aes(x=Predictor,y=DV,fill=type,color=type,linetype=type))+
+         aes(x=Predictor.norm,y=DV,fill=type,color=type,linetype=type))+
   geom_smooth(method="lm",formula="y~x",se=F,linewidth=3)+
+  #coord_cartesian(xlim=c(-3, 3))+
   stat_cor(aes(color = type),r.digits=2,
            p.digits=3,label.x = c(-2.5,-2.5,-2.5),label.y = c(5,4.5,4),
            cor.coef.name="r",r.accuracy=0.01,p.accuracy=0.001)+
