@@ -244,7 +244,7 @@ ML_dat<-Diff_scores$preds
 
 # rename variables
 D_dat$Country<-rownames(D_dat)
-names(ML_dat)<-c("sex","Country","FM","P","cut.groups")
+names(ML_dat)<-c("sex","Country","MF","P","cut.groups")
 
 # calculate within country sex ratio (as proportion of men within country)
 D_dat$sex.ratio<-
@@ -317,12 +317,12 @@ ML_dat<-left_join(x=ML_dat,
 # make sex variable numeric
 ML_dat$Sex<-ifelse(ML_dat$sex=="Female",-0.5,0.5)
 
-# scale FM with the total pooled SD
-ML_dat$FM<-ML_dat$FM/D_dat$pooled.sd.total[1]
+# scale MF with the total pooled SD
+ML_dat$MF<-ML_dat$MF/D_dat$pooled.sd.total[1]
 
 # exclude missing values
 fdat <- ML_dat %>%
-  dplyr::select("Sex","FM","Country","sex.ratio",
+  dplyr::select("Sex","MF","Country","sex.ratio",
                 "GenderGapIndex","GenderGapIndex.raw") %>%
   na.omit()
 ```
@@ -332,14 +332,14 @@ fdat <- ML_dat %>%
 
 
 ```r
-reliab.FM<-
-  reliability_dms(data=fdat,diff_var="Sex",var = "FM",
+reliab.MF<-
+  reliability_dms(data=fdat,diff_var="Sex",var = "MF",
                   diff_var_values = c(0.5,-0.5),group_var = "Country")
 
-export(t(data.frame(reliab.FM)),
-       "../results/reliab.FM.xlsx",
+export(t(data.frame(reliab.MF)),
+       "../results/reliab.MF.xlsx",
        overwrite=T)
-reliab.FM
+reliab.MF
 ```
 
 ```
@@ -358,30 +358,22 @@ reliab.FM
 
 
 ```r
-fit_FM<-
+fit_MF<-
   ddsc_ml(data = fdat,predictor = "GenderGapIndex",
           covariates="sex.ratio",
           moderator = "Sex",moderator_values=c(0.5,-0.5),
-          DV = "FM",lvl2_unit = "Country",re_cov_test = T,
+          DV = "MF",lvl2_unit = "Country",re_cov_test = T,
           scaling_sd = "observed")
-```
-
-```
-## NOTE: Results may be misleading due to involvement in interactions
-```
-
-```
-## refitting model(s) with ML (instead of REML)
 ```
 
 ### Descriptive statistics
 
 
 ```r
-export(rownames_to_column(data.frame(fit_FM$descriptives)),
-       "../results/FM_ml_desc.xlsx",
+export(rownames_to_column(data.frame(fit_MF$descriptives)),
+       "../results/MF_ml_desc.xlsx",
        overwrite=T)
-round(fit_FM$descriptives,2)
+round(fit_MF$descriptives,2)
 ```
 
 ```
@@ -415,7 +407,7 @@ round(fit_FM$descriptives,2)
 ```
 
 ```r
-round(fit_FM$SDs,2)
+round(fit_MF$SDs,2)
 ```
 
 ```
@@ -427,10 +419,10 @@ round(fit_FM$SDs,2)
 
 
 ```r
-export(t(data.frame(fit_FM$re_cov_test)),
-       "../results/FM_ml_var_test.xlsx",
+export(t(data.frame(fit_MF$re_cov_test)),
+       "../results/MF_ml_var_test.xlsx",
        overwrite=T)
-round(fit_FM$re_cov_test,3)
+round(fit_MF$re_cov_test,3)
 ```
 
 ```
@@ -442,10 +434,10 @@ round(fit_FM$re_cov_test,3)
 
 
 ```r
-export(rownames_to_column(data.frame(fit_FM$ddsc_sem_fit$variance_test)),
-       "../results/FM_ml_comp_cor.xlsx",
+export(rownames_to_column(data.frame(fit_MF$ddsc_sem_fit$variance_test)),
+       "../results/MF_ml_comp_cor.xlsx",
        overwrite=T)
-round(fit_FM$ddsc_sem_fit$variance_test,3)
+round(fit_MF$ddsc_sem_fit$variance_test,3)
 ```
 
 ```
@@ -462,39 +454,65 @@ round(fit_FM$ddsc_sem_fit$variance_test,3)
 
 
 ```r
-export(rownames_to_column(data.frame(fit_FM$results)),
-       "../results/FM_ml_results.xlsx",
+export(rownames_to_column(data.frame(fit_MF$results)),
+       "../results/MF_ml_results.xlsx",
        overwrite=T)
-round(fit_FM$results,3)
+round(fit_MF$results,3)
 ```
 
 ```
-##                            estimate    SE     df t.ratio p.value
-## r_xy1y2                       0.337 0.138 48.270   2.437   0.019
-## w_11                          0.092 0.022 45.282   4.118   0.000
-## w_21                          0.025 0.025 47.539   0.988   0.328
-## r_xy1                         0.512 0.124 45.282   4.118   0.000
-## r_xy2                         0.144 0.146 47.539   0.988   0.328
-## b_11                          0.522 0.127 45.282   4.118   0.000
-## b_21                          0.142 0.143 47.539   0.988   0.328
-## main_effect                   0.059 0.020 46.744   3.003   0.004
-## moderator_effect              0.967 0.028 49.590  35.172   0.000
-## interaction                   0.067 0.028 48.270   2.437   0.019
-## q_b11_b21                     0.436    NA     NA      NA      NA
-## q_rxy1_rxy2                   0.420    NA     NA      NA      NA
-## cross_over_point            -14.397    NA     NA      NA      NA
-## interaction_vs_main           0.009 0.036 48.323   0.240   0.811
-## interaction_vs_main_bscale    0.049 0.203 48.323   0.240   0.811
-## interaction_vs_main_rscale    0.040 0.207 48.293   0.192   0.849
-## dadas                        -0.050 0.051 47.539  -0.988   0.836
-## dadas_bscale                 -0.283 0.287 47.539  -0.988   0.836
-## dadas_rscale                 -0.289 0.292 47.539  -0.988   0.836
-## abs_diff                      0.067 0.028 48.270   2.437   0.009
-## abs_sum                       0.117 0.039 46.744   3.003   0.002
-## abs_diff_bscale               0.380 0.156 48.270   2.437   0.009
-## abs_sum_bscale                0.663 0.221 46.744   3.003   0.002
-## abs_diff_rscale               0.368 0.157 48.363   2.347   0.012
-## abs_sum_rscale                0.656 0.221 46.762   2.964   0.002
+##                            estimate    SE     df t.ratio p.value ci.lower
+## r_xy1y2                       0.337 0.138 48.270   2.437   0.019    0.059
+## w_11                          0.092 0.022 45.282   4.118   0.000    0.047
+## w_21                          0.025 0.025 47.539   0.988   0.328   -0.026
+## r_xy1                         0.512 0.124 45.282   4.118   0.000    0.262
+## r_xy2                         0.144 0.146 47.539   0.988   0.328   -0.149
+## b_11                          0.522 0.127 45.282   4.118   0.000    0.267
+## b_21                          0.142 0.143 47.539   0.988   0.328   -0.147
+## main_effect                   0.059 0.020 46.744   3.003   0.004    0.019
+## moderator_effect              0.967 0.028 49.590  35.172   0.000    0.912
+## interaction                   0.067 0.028 48.270   2.437   0.019    0.012
+## q_b11_b21                     0.436    NA     NA      NA      NA       NA
+## q_rxy1_rxy2                   0.420    NA     NA      NA      NA       NA
+## cross_over_point            -14.397    NA     NA      NA      NA       NA
+## interaction_vs_main           0.009 0.036 48.323   0.240   0.811   -0.063
+## interaction_vs_main_bscale    0.049 0.203 48.323   0.240   0.811   -0.358
+## interaction_vs_main_rscale    0.040 0.207 48.293   0.192   0.849   -0.376
+## dadas                        -0.050 0.051 47.539  -0.988   0.836   -0.152
+## dadas_bscale                 -0.283 0.287 47.539  -0.988   0.836   -0.859
+## dadas_rscale                 -0.289 0.292 47.539  -0.988   0.836   -0.876
+## abs_diff                      0.067 0.028 48.270   2.437   0.009    0.012
+## abs_sum                       0.117 0.039 46.744   3.003   0.002    0.039
+## abs_diff_bscale               0.380 0.156 48.270   2.437   0.009    0.067
+## abs_sum_bscale                0.663 0.221 46.744   3.003   0.002    0.219
+## abs_diff_rscale               0.368 0.157 48.363   2.347   0.012    0.053
+## abs_sum_rscale                0.656 0.221 46.762   2.964   0.002    0.211
+##                            ci.upper
+## r_xy1y2                       0.614
+## w_11                          0.137
+## w_21                          0.076
+## r_xy1                         0.763
+## r_xy2                         0.438
+## b_11                          0.777
+## b_21                          0.430
+## main_effect                   0.098
+## moderator_effect              1.023
+## interaction                   0.123
+## q_b11_b21                        NA
+## q_rxy1_rxy2                      NA
+## cross_over_point                 NA
+## interaction_vs_main           0.081
+## interaction_vs_main_bscale    0.456
+## interaction_vs_main_rscale    0.455
+## dadas                         0.052
+## dadas_bscale                  0.293
+## dadas_rscale                  0.299
+## abs_diff                      0.123
+## abs_sum                       0.196
+## abs_diff_bscale               0.694
+## abs_sum_bscale                1.108
+## abs_diff_rscale               0.683
+## abs_sum_rscale                1.102
 ```
 
 ### Multi-level model output
@@ -502,7 +520,7 @@ round(fit_FM$results,3)
 
 ```r
 # cross-level interaction model
-summary(fit_FM$model)
+summary(fit_MF$model)
 ```
 
 ```
@@ -545,13 +563,13 @@ summary(fit_FM$model)
 
 ```r
 # reduced model without the predictor
-summary(fit_FM$reduced_model)
+summary(fit_MF$reduced_model)
 ```
 
 ```
 ## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
 ## lmerModLmerTest]
-## Formula: FM ~ Sex + sex.ratio + (Sex | Country)
+## Formula: MF ~ Sex + sex.ratio + (Sex | Country)
 ##    Data: data
 ## Control: lme4::lmerControl(optimizer = "bobyqa")
 ## 
@@ -590,17 +608,17 @@ The model is already stored within the multi-level model object.
 
 
 ```r
-fit_FM_sem<-fit_FM$ddsc_sem_fit
+fit_MF_sem<-fit_MF$ddsc_sem_fit
 ```
 
 ### Results
 
 
 ```r
-export(rownames_to_column(data.frame(fit_FM_sem$results)),
-       "../results/FM_sem_results.xlsx",
+export(rownames_to_column(data.frame(fit_MF_sem$results)),
+       "../results/MF_sem_results.xlsx",
        overwrite=T)
-round(fit_FM_sem$results,3)
+round(fit_MF_sem$results,3)
 ```
 
 ```
@@ -639,11 +657,11 @@ round(fit_FM_sem$results,3)
 ```r
 # refit reduced and full models with GGGI in original scale
 
-ml_FM_red<-fit_FM$reduced_model
+ml_MF_red<-fit_MF$reduced_model
   
 # refit the model with raw variable
-ml_FM<-
-  lmer(FM~Sex+
+ml_MF<-
+  lmer(MF~Sex+
          sex.ratio+
          GenderGapIndex.raw+
          Sex:GenderGapIndex.raw+
@@ -656,7 +674,7 @@ ml_FM<-
 
 p<-
   emmip(
-    ml_FM, 
+    ml_MF, 
     Sex ~ GenderGapIndex.raw,
     at=list(Sex = c(-0.5,0.5),
             GenderGapIndex.raw=
@@ -674,7 +692,7 @@ max.y.comp<-max(p$UCL)
 
 # Men and Women mean distributions
 
-p3<-coefficients(ml_FM_red)$Country
+p3<-coefficients(ml_MF_red)$Country
 p3<-cbind(rbind(p3,p3),weight=rep(c(-0.5,0.5),each=nrow(p3)))
 p3$xvar<-p3$`(Intercept)`+p3$sex.ratio*0.5+p3$Sex*p3$weight
 p3$sex<-as.factor(p3$weight)
@@ -688,7 +706,7 @@ max.y.mean.distr<-max(p3$xvar)
 # obtain the coefs for the sex-effect (difference) as function of GGGI
 
 p2<-data.frame(
-  emtrends(ml_FM,var="Sex",
+  emtrends(ml_MF,var="Sex",
            specs="GenderGapIndex.raw",
            at=list(#Sex = c(-0.5,0.5),
              GenderGapIndex.raw=
@@ -708,7 +726,7 @@ max.y.diff<-max(p2$UCL)
 
 # difference score distribution
 
-p4<-coefficients(ml_FM_red)$Country
+p4<-coefficients(ml_MF_red)$Country
 p4$xvar=(+1)*p4$Sex
 
 # obtain mix and max for aligned plots
@@ -737,35 +755,35 @@ max.y.narrow<-
 
 # scaled simple effects to the plot
 
-pvals<-p_coding(c(fit_FM$results["b_21","p.value"],
-                    fit_FM$results["b_11","p.value"]))
+pvals<-p_coding(c(fit_MF$results["b_21","p.value"],
+                    fit_MF$results["b_11","p.value"]))
 
 ests<-
-  round_tidy(c(fit_FM$results["b_21","estimate"],
-               fit_FM$results["b_11","estimate"]),2)
+  round_tidy(c(fit_MF$results["b_21","estimate"],
+               fit_MF$results["b_11","estimate"]),2)
 
 coef1<-paste0("b21 = ",ests[1],", p ",
-               ifelse(fit_FM$results["b_21","p.value"]<.001,
+               ifelse(fit_MF$results["b_21","p.value"]<.001,
                       "","="),pvals[1])
 coef2<-paste0("b11 = ",ests[2],", p ",
-               ifelse(fit_FM$results["b_11","p.value"]<.001,
+               ifelse(fit_MF$results["b_11","p.value"]<.001,
                       "","="),pvals[2])
 
-coef_q<-round_tidy(fit_FM$results["q_b11_b21","estimate"],2)
+coef_q<-round_tidy(fit_MF$results["q_b11_b21","estimate"],2)
 coef_q<-paste0("q_b = ",coef_q,", p ",
-               ifelse(fit_FM$results["interaction","p.value"]<.001,"","="),
-               p_coding(fit_FM$results["interaction","p.value"]))
+               ifelse(fit_MF$results["interaction","p.value"]<.001,"","="),
+               p_coding(fit_MF$results["interaction","p.value"]))
 
 coefs<-data.frame(sex=c("Women","Men"),
                   coef=c(coef1,coef2))
 
-p1.FM<-ggplot(p,aes(y=yvar,x=xvar,color=sex))+
+p1.MF<-ggplot(p,aes(y=yvar,x=xvar,color=sex))+
   geom_point(size=3)+
   geom_errorbar(aes(ymin=LCL, ymax=UCL),alpha=0.5)+
   xlab("Global Gender Gap Index")+
   #ylim=c(2.3,3.9)+
   ylim(c(min.y.pred,max.y.pred))+
-  ylab("Personality FM Mean-Level")+
+  ylab("Personality MF Mean-Level")+
   scale_color_manual(values=met.brewer("Archambault")[c(6,2)])+
   theme(legend.position = "top",
         legend.title=element_blank(),
@@ -783,7 +801,7 @@ p1.FM<-ggplot(p,aes(y=yvar,x=xvar,color=sex))+
   geom_text(inherit.aes=F,aes(x=0.63,y=-0.1,
                               label=coef_q,size=14,hjust="left"),
             show.legend=F)
-p1.FM
+p1.MF
 ```
 
 ![](Multivariate_Analysis_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
@@ -792,23 +810,23 @@ p1.FM
 # prediction plot for difference score
 
 
-pvals2<-p_coding(fit_FM$results["r_xy1y2","p.value"])
+pvals2<-p_coding(fit_MF$results["r_xy1y2","p.value"])
 
 ests2<-
-  round_tidy(fit_FM$results["r_xy1y2","estimate"],2)
+  round_tidy(fit_MF$results["r_xy1y2","estimate"],2)
 
 coefs2<-paste0("r = ",ests2,
                ", p ",
-               ifelse(fit_FM$results["r_xy1y2","p.value"]<.001,"","="),
+               ifelse(fit_MF$results["r_xy1y2","p.value"]<.001,"","="),
                pvals2)
 
 
-p2.FM<-ggplot(p2,aes(y=yvar,x=xvar))+
+p2.MF<-ggplot(p2,aes(y=yvar,x=xvar))+
   geom_point(size=3)+
   geom_errorbar(aes(ymin=LCL, ymax=UCL),alpha=0.5)+
   xlab("Global Gender Gap Index")+
   ylim(c(min.y.narrow,max.y.narrow))+
-  ylab("Difference in Personality FM")+
+  ylab("Difference in Personality MF")+
   #scale_color_manual(values=met.brewer("Archambault")[c(6,2)])+
   theme(legend.position = "right",
         legend.title=element_blank(),
@@ -834,7 +852,7 @@ p2.FM<-ggplot(p2,aes(y=yvar,x=xvar))+
 ```
 
 ```r
-p2.FM
+p2.MF
 ```
 
 ![](Multivariate_Analysis_files/figure-html/unnamed-chunk-17-2.png)<!-- -->
@@ -842,7 +860,7 @@ p2.FM
 ```r
 # mean-level distributions
 
-p3.FM<-
+p3.MF<-
   ggplot(p3, aes(x=xvar, fill=sex)) + 
   geom_density(alpha=.75) + 
   scale_fill_manual(values=met.brewer("Archambault")[c(6,2)])+
@@ -863,7 +881,7 @@ p3.FM<-
         panel.grid.major.x = element_line(size = 0.5, linetype = 2,
                                           colour = "gray"))+
   coord_flip()
-p3.FM
+p3.MF
 ```
 
 ![](Multivariate_Analysis_files/figure-html/unnamed-chunk-17-3.png)<!-- -->
@@ -871,7 +889,7 @@ p3.FM
 ```r
 # distribution for mean differences
 
-p4.FM<-
+p4.MF<-
   ggplot(p4, aes(x=xvar,fill="black")) + 
   geom_density(alpha=.75) + 
   scale_fill_manual(values="black")+
@@ -892,7 +910,7 @@ p4.FM<-
         panel.grid.major.x = element_line(size = 0.5, linetype = 2,
                                           colour = "gray"))+
   coord_flip()
-p4.FM
+p4.MF
 ```
 
 ![](Multivariate_Analysis_files/figure-html/unnamed-chunk-17-4.png)<!-- -->
@@ -900,12 +918,12 @@ p4.FM
 ```r
 # combine component-specific predictions
 
-p13.FM<-
-  ggarrange(p1.FM, p3.FM,common.legend = T,
+p13.MF<-
+  ggarrange(p1.MF, p3.MF,common.legend = T,
             ncol=2, nrow=1,widths=c(4,1.4)
   )
 
-p13.FM
+p13.MF
 ```
 
 ![](Multivariate_Analysis_files/figure-html/unnamed-chunk-17-5.png)<!-- -->
@@ -913,31 +931,31 @@ p13.FM
 ```r
 # combine difference score predictions
 
-p24.FM<-
-  ggarrange(p2.FM, p4.FM,
+p24.MF<-
+  ggarrange(p2.MF, p4.MF,
             ncol=2, nrow=1,widths=c(4,1.4)
   )
 
-p24.FM
+p24.MF
 ```
 
 ![](Multivariate_Analysis_files/figure-html/unnamed-chunk-17-6.png)<!-- -->
 
 ```r
-pall.FM<-
-  ggarrange(p13.FM,p24.FM,align = "hv",
+pall.MF<-
+  ggarrange(p13.MF,p24.MF,align = "hv",
             ncol=1,nrow=2,heights=c(2,1))
-pall.FM
+pall.MF
 ```
 
 ![](Multivariate_Analysis_files/figure-html/unnamed-chunk-17-7.png)<!-- -->
 
 ```r
 png(filename = 
-      "../results/pall.FM.png",
+      "../results/pall.MF.png",
     units = "cm",
     width = 21.0,height=29.7*(4/5),res = 600)
-pall.FM
+pall.MF
 dev.off()
 ```
 
@@ -955,7 +973,7 @@ print(s,locale=F)
 ```
 
 ```
-## R version 4.3.0 (2023-04-21 ucrt)
+## R version 4.3.2 (2023-10-31 ucrt)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
 ## Running under: Windows 10 x64 (build 19045)
 ## 
@@ -966,40 +984,43 @@ print(s,locale=F)
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] finalfit_1.0.6    emmeans_1.8.6     MetBrewer_0.2.0   ggpubr_0.6.0     
-##  [5] ggplot2_3.4.2     tibble_3.2.1      dplyr_1.1.2       rio_0.5.29       
-##  [9] lmerTest_3.1-3    lme4_1.1-33       Matrix_1.5-4      multid_0.8.0.9000
-## [13] knitr_1.42        rmarkdown_2.21   
+##  [1] finalfit_1.0.6    emmeans_1.10.0    MetBrewer_0.2.0   ggpubr_0.6.0     
+##  [5] ggplot2_3.4.4     tibble_3.2.1      dplyr_1.1.4       rio_0.5.29       
+##  [9] lmerTest_3.1-3    lme4_1.1-35.1     Matrix_1.6-5      multid_1.0.0.9000
+## [13] knitr_1.44        rmarkdown_2.25   
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] tidyselect_1.2.0    farver_2.1.1        fastmap_1.1.1      
-##  [4] pROC_1.18.2         digest_0.6.31       estimability_1.4.1 
-##  [7] lifecycle_1.0.3     survival_3.5-5      magrittr_2.0.3     
-## [10] compiler_4.3.0      rlang_1.1.1         sass_0.4.6         
-## [13] tools_4.3.0         utf8_1.2.3          yaml_2.3.7         
-## [16] data.table_1.14.8   ggsignif_0.6.4      labeling_0.4.2     
-## [19] mnormt_2.1.1        curl_5.0.0          plyr_1.8.8         
-## [22] abind_1.4-5         withr_2.5.0         foreign_0.8-84     
-## [25] purrr_1.0.1         numDeriv_2016.8-1.1 stats4_4.3.0       
-## [28] grid_4.3.0          fansi_1.0.4         lavaan_0.6-15      
-## [31] xtable_1.8-4        colorspace_2.1-0    mice_3.15.0        
-## [34] scales_1.2.1        iterators_1.0.14    MASS_7.3-58.4      
-## [37] cli_3.6.1           mvtnorm_1.1-3       crayon_1.5.2       
-## [40] generics_0.1.3      rstudioapi_0.14     readxl_1.4.2       
-## [43] minqa_1.2.5         cachem_1.0.8        splines_4.3.0      
-## [46] parallel_4.3.0      cellranger_1.1.0    vctrs_0.6.2        
-## [49] boot_1.3-28.1       glmnet_4.1-7        jsonlite_1.8.4     
-## [52] carData_3.0-5       car_3.1-2           hms_1.1.3          
-## [55] rstatix_0.7.2       foreach_1.5.2       tidyr_1.3.0        
-## [58] jquerylib_0.1.4     glue_1.6.2          nloptr_2.0.3       
-## [61] codetools_0.2-19    cowplot_1.1.1       stringi_1.7.12     
-## [64] gtable_0.3.3        shape_1.4.6         quadprog_1.5-8     
-## [67] munsell_0.5.0       pillar_1.9.0        htmltools_0.5.5    
-## [70] R6_2.5.1            pbivnorm_0.6.0      evaluate_0.21      
-## [73] lattice_0.21-8      highr_0.10          haven_2.5.2        
-## [76] backports_1.4.1     openxlsx_4.2.5.2    broom_1.0.4        
-## [79] bslib_0.4.2         Rcpp_1.0.10         zip_2.3.0          
-## [82] gridExtra_2.3       nlme_3.1-162        xfun_0.39          
-## [85] forcats_1.0.0       pkgconfig_2.0.3
+##  [1] mnormt_2.1.1        pROC_1.18.5         gridExtra_2.3      
+##  [4] sandwich_3.0-2      readxl_1.4.2        rlang_1.1.3        
+##  [7] magrittr_2.0.3      multcomp_1.4-25     compiler_4.3.2     
+## [10] vctrs_0.6.5         quadprog_1.5-8      crayon_1.5.2       
+## [13] pkgconfig_2.0.3     shape_1.4.6         fastmap_1.1.1      
+## [16] backports_1.4.1     labeling_0.4.3      pbivnorm_0.6.0     
+## [19] utf8_1.2.4          haven_2.5.2         nloptr_2.0.3       
+## [22] purrr_1.0.2         xfun_0.39           glmnet_4.1-8       
+## [25] jomo_2.7-6          cachem_1.0.8        jsonlite_1.8.8     
+## [28] pan_1.9             broom_1.0.5         parallel_4.3.2     
+## [31] lavaan_0.6-17       R6_2.5.1            bslib_0.5.1        
+## [34] stringi_1.8.3       car_3.1-2           boot_1.3-28.1      
+## [37] rpart_4.1.21        jquerylib_0.1.4     cellranger_1.1.0   
+## [40] numDeriv_2016.8-1.1 estimability_1.4.1  Rcpp_1.0.12        
+## [43] iterators_1.0.14    zoo_1.8-12          splines_4.3.2      
+## [46] nnet_7.3-19         tidyselect_1.2.0    rstudioapi_0.15.0  
+## [49] abind_1.4-5         yaml_2.3.7          codetools_0.2-19   
+## [52] curl_5.0.2          lattice_0.21-9      plyr_1.8.9         
+## [55] withr_3.0.0         coda_0.19-4         evaluate_0.23      
+## [58] foreign_0.8-85      survival_3.5-7      zip_2.3.0          
+## [61] pillar_1.9.0        carData_3.0-5       mice_3.16.0        
+## [64] foreach_1.5.2       stats4_4.3.2        generics_0.1.3     
+## [67] hms_1.1.3           munsell_0.5.0       scales_1.3.0       
+## [70] minqa_1.2.6         xtable_1.8-4        glue_1.7.0         
+## [73] tools_4.3.2         data.table_1.14.8   openxlsx_4.2.5.2   
+## [76] ggsignif_0.6.4      forcats_1.0.0       mvtnorm_1.2-4      
+## [79] cowplot_1.1.3       grid_4.3.2          tidyr_1.3.1        
+## [82] colorspace_2.1-0    nlme_3.1-163        cli_3.6.2          
+## [85] fansi_1.0.6         gtable_0.3.4        rstatix_0.7.2      
+## [88] sass_0.4.7          digest_0.6.34       TH.data_1.1-2      
+## [91] farver_2.1.1        htmltools_0.5.5     lifecycle_1.0.4    
+## [94] mitml_0.4-5         MASS_7.3-60
 ```
 
