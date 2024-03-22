@@ -235,33 +235,24 @@ round(fit_trust$descriptives,2)
 ```
 
 ```
-##                       M   SD means_y1 means_y1_scaled means_y2
-## means_y1          -0.04 0.28     1.00            1.00     0.93
-## means_y1_scaled   -0.13 0.95     1.00            1.00     0.93
-## means_y2           0.00 0.31     0.93            0.93     1.00
-## means_y2_scaled   -0.01 1.05     0.93            0.93     1.00
-## GEI                0.00 1.00    -0.06           -0.06     0.09
-## GEI_scaled         0.00 1.00    -0.06           -0.06     0.09
-## diff_score        -0.04 0.12    -0.07           -0.07    -0.44
-## diff_score_scaled -0.12 0.39    -0.07           -0.07    -0.44
-##                   means_y2_scaled   GEI GEI_scaled diff_score
-## means_y1                     0.93 -0.06      -0.06      -0.07
-## means_y1_scaled              0.93 -0.06      -0.06      -0.07
-## means_y2                     1.00  0.09       0.09      -0.44
-## means_y2_scaled              1.00  0.09       0.09      -0.44
-## GEI                          0.09  1.00       1.00      -0.38
-## GEI_scaled                   0.09  1.00       1.00      -0.38
-## diff_score                  -0.44 -0.38      -0.38       1.00
-## diff_score_scaled           -0.44 -0.38      -0.38       1.00
-##                   diff_score_scaled
-## means_y1                      -0.07
-## means_y1_scaled               -0.07
-## means_y2                      -0.44
-## means_y2_scaled               -0.44
-## GEI                           -0.38
-## GEI_scaled                    -0.38
-## diff_score                     1.00
-## diff_score_scaled              1.00
+##                       M   SD means_y1 means_y1_scaled means_y2 means_y2_scaled
+## means_y1          -0.04 0.28     1.00            1.00     0.93            0.93
+## means_y1_scaled   -0.13 0.95     1.00            1.00     0.93            0.93
+## means_y2           0.00 0.31     0.93            0.93     1.00            1.00
+## means_y2_scaled   -0.01 1.05     0.93            0.93     1.00            1.00
+## GEI                0.00 1.00    -0.06           -0.06     0.09            0.09
+## GEI_scaled         0.00 1.00    -0.06           -0.06     0.09            0.09
+## diff_score        -0.04 0.12    -0.07           -0.07    -0.44           -0.44
+## diff_score_scaled -0.12 0.39    -0.07           -0.07    -0.44           -0.44
+##                     GEI GEI_scaled diff_score diff_score_scaled
+## means_y1          -0.06      -0.06      -0.07             -0.07
+## means_y1_scaled   -0.06      -0.06      -0.07             -0.07
+## means_y2           0.09       0.09      -0.44             -0.44
+## means_y2_scaled    0.09       0.09      -0.44             -0.44
+## GEI                1.00       1.00      -0.38             -0.38
+## GEI_scaled         1.00       1.00      -0.38             -0.38
+## diff_score        -0.38      -0.38       1.00              1.00
+## diff_score_scaled -0.38      -0.38       1.00              1.00
 ```
 
 ```r
@@ -319,32 +310,58 @@ round(fit_trust$results,3)
 ```
 
 ```
-##                            estimate    SE     df t.ratio p.value
-## r_xy1y2                      -0.374 0.109 66.417  -3.431   0.001
-## w_11                         -0.043 0.032 68.926  -1.373   0.174
-## w_21                          0.000 0.034 69.032  -0.011   0.992
-## r_xy1                        -0.156 0.114 68.926  -1.373   0.174
-## r_xy2                        -0.001 0.110 69.032  -0.011   0.992
-## b_11                         -0.148 0.108 68.926  -1.373   0.174
-## b_21                         -0.001 0.116 69.032  -0.011   0.992
-## main_effect                  -0.022 0.032 69.054  -0.680   0.499
-## moderator_effect             -0.075 0.013 70.805  -5.898   0.000
-## interaction                  -0.043 0.013 66.417  -3.431   0.001
-## q_b11_b21                    -0.148    NA     NA      NA      NA
-## q_rxy1_rxy2                  -0.156    NA     NA      NA      NA
-## cross_over_point             -1.732    NA     NA      NA      NA
-## interaction_vs_main           0.021 0.037 68.846   0.577   0.566
-## interaction_vs_main_bscale    0.072 0.125 68.846   0.577   0.566
-## interaction_vs_main_rscale    0.076 0.114 68.801   0.669   0.506
-## dadas                        -0.001 0.068 69.032  -0.011   0.504
-## dadas_bscale                 -0.002 0.231 69.032  -0.011   0.504
-## dadas_rscale                 -0.002 0.220 69.032  -0.011   0.504
-## abs_diff                      0.043 0.013 66.417   3.431   0.001
-## abs_sum                       0.044 0.064 69.054   0.680   0.249
-## abs_diff_bscale               0.147 0.043 66.417   3.431   0.001
-## abs_sum_bscale                0.149 0.220 69.054   0.680   0.249
-## abs_diff_rscale               0.155 0.042 66.737   3.665   0.000
-## abs_sum_rscale                0.157 0.220 69.050   0.716   0.238
+##                            estimate    SE     df t.ratio p.value ci.lower
+## r_xy1y2                      -0.374 0.109 66.417  -3.431   0.001   -0.592
+## w_11                         -0.043 0.032 68.926  -1.373   0.174   -0.107
+## w_21                          0.000 0.034 69.032  -0.011   0.992   -0.068
+## r_xy1                        -0.156 0.114 68.926  -1.373   0.174   -0.383
+## r_xy2                        -0.001 0.110 69.032  -0.011   0.992   -0.221
+## b_11                         -0.148 0.108 68.926  -1.373   0.174   -0.363
+## b_21                         -0.001 0.116 69.032  -0.011   0.992   -0.232
+## main_effect                  -0.022 0.032 69.054  -0.680   0.499   -0.086
+## moderator_effect             -0.075 0.013 70.805  -5.898   0.000   -0.100
+## interaction                  -0.043 0.013 66.417  -3.431   0.001   -0.068
+## q_b11_b21                    -0.148    NA     NA      NA      NA       NA
+## q_rxy1_rxy2                  -0.156    NA     NA      NA      NA       NA
+## cross_over_point             -1.732    NA     NA      NA      NA       NA
+## interaction_vs_main           0.021 0.037 68.846   0.577   0.566   -0.052
+## interaction_vs_main_bscale    0.072 0.125 68.846   0.577   0.566   -0.177
+## interaction_vs_main_rscale    0.076 0.114 68.801   0.669   0.506   -0.151
+## dadas                        -0.001 0.068 69.032  -0.011   0.504   -0.136
+## dadas_bscale                 -0.002 0.231 69.032  -0.011   0.504   -0.464
+## dadas_rscale                 -0.002 0.220 69.032  -0.011   0.504   -0.441
+## abs_diff                      0.043 0.013 66.417   3.431   0.001    0.018
+## abs_sum                       0.044 0.064 69.054   0.680   0.249   -0.085
+## abs_diff_bscale               0.147 0.043 66.417   3.431   0.001    0.061
+## abs_sum_bscale                0.149 0.220 69.054   0.680   0.249   -0.289
+## abs_diff_rscale               0.155 0.042 66.737   3.665   0.000    0.071
+## abs_sum_rscale                0.157 0.220 69.050   0.716   0.238   -0.281
+##                            ci.upper
+## r_xy1y2                      -0.156
+## w_11                          0.020
+## w_21                          0.067
+## r_xy1                         0.071
+## r_xy2                         0.218
+## b_11                          0.067
+## b_21                          0.230
+## main_effect                   0.042
+## moderator_effect             -0.049
+## interaction                  -0.018
+## q_b11_b21                        NA
+## q_rxy1_rxy2                      NA
+## cross_over_point                 NA
+## interaction_vs_main           0.094
+## interaction_vs_main_bscale    0.322
+## interaction_vs_main_rscale    0.304
+## dadas                         0.135
+## dadas_bscale                  0.459
+## dadas_rscale                  0.437
+## abs_diff                      0.068
+## abs_sum                       0.172
+## abs_diff_bscale               0.232
+## abs_sum_bscale                0.587
+## abs_diff_rscale               0.240
+## abs_sum_rscale                0.596
 ```
 
 ### Multi-level model output
@@ -407,8 +424,7 @@ summary(fit_trust$reduced_model)
 ```
 ## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
 ## lmerModLmerTest]
-## Formula: 
-## trust ~ sex.c + age + age_sq + subj_math_skills + (sex.c | country)
+## Formula: trust ~ sex.c + age + age_sq + subj_math_skills + (sex.c | country)
 ##    Data: data
 ## Control: lme4::lmerControl(optimizer = "bobyqa")
 ## 
@@ -467,58 +483,32 @@ round(fit_trust_sem$results,3)
 ```
 
 ```
-##                                    est    se      z pvalue ci.lower
-## r_xy1_y2                        -0.384 0.110 -3.506  0.000   -0.599
-## r_xy1                           -0.056 0.118 -0.472  0.637   -0.288
-## r_xy2                            0.093 0.118  0.786  0.432   -0.139
-## b_11                            -0.053 0.112 -0.472  0.637   -0.273
-## b_21                             0.098 0.124  0.786  0.432   -0.146
-## b_10                            -0.130 0.111 -1.171  0.241   -0.349
-## b_20                            -0.008 0.123 -0.065  0.949   -0.250
-## res_cov_y1_y2                    0.915 0.159  5.768  0.000    0.604
-## diff_b10_b20                    -0.123 0.043 -2.874  0.004   -0.206
-## diff_b11_b21                    -0.151 0.043 -3.506  0.000   -0.235
-## diff_rxy1_rxy2                  -0.149 0.041 -3.599  0.000   -0.230
-## q_b11_b21                       -0.151 0.043 -3.474  0.001   -0.236
-## q_rxy1_rxy2                     -0.149 0.042 -3.586  0.000   -0.231
-## cross_over_point                -0.814 0.366 -2.222  0.026   -1.531
-## sum_b11_b21                      0.045 0.233  0.192  0.848   -0.411
-## main_effect                      0.022 0.116  0.192  0.848   -0.206
-## interaction_vs_main_effect       0.128 0.112  1.144  0.253   -0.091
-## diff_abs_b11_abs_b21            -0.045 0.233 -0.192  0.848   -0.501
-## abs_diff_b11_b21                 0.151 0.043  3.506  0.000    0.066
-## abs_sum_b11_b21                  0.045 0.233  0.192  0.424   -0.411
-## dadas                            0.106 0.224  0.472  0.319   -0.334
-## q_r_equivalence                  0.149 0.042  3.586  1.000       NA
-## q_b_equivalence                  0.151 0.043  3.474  1.000       NA
-## cross_over_point_equivalence     0.814 0.366  2.222  0.987       NA
-## cross_over_point_minimal_effect  0.814 0.366  2.222  0.013       NA
-##                                 ci.upper
-## r_xy1_y2                          -0.169
-## r_xy1                              0.176
-## r_xy2                              0.325
-## b_11                               0.167
-## b_21                               0.341
-## b_10                               0.088
-## b_20                               0.234
-## res_cov_y1_y2                      1.226
-## diff_b10_b20                      -0.039
-## diff_b11_b21                      -0.066
-## diff_rxy1_rxy2                    -0.068
-## q_b11_b21                         -0.066
-## q_rxy1_rxy2                       -0.068
-## cross_over_point                  -0.096
-## sum_b11_b21                        0.501
-## main_effect                        0.250
-## interaction_vs_main_effect         0.348
-## diff_abs_b11_abs_b21               0.411
-## abs_diff_b11_b21                   0.235
-## abs_sum_b11_b21                    0.501
-## dadas                              0.546
-## q_r_equivalence                       NA
-## q_b_equivalence                       NA
-## cross_over_point_equivalence          NA
-## cross_over_point_minimal_effect       NA
+##                                    est    se      z pvalue ci.lower ci.upper
+## r_xy1_y2                        -0.384 0.110 -3.506  0.000   -0.599   -0.169
+## r_xy1                           -0.056 0.118 -0.472  0.637   -0.288    0.176
+## r_xy2                            0.093 0.118  0.786  0.432   -0.139    0.325
+## b_11                            -0.053 0.112 -0.472  0.637   -0.273    0.167
+## b_21                             0.098 0.124  0.786  0.432   -0.146    0.341
+## b_10                            -0.130 0.111 -1.171  0.241   -0.349    0.088
+## b_20                            -0.008 0.123 -0.065  0.949   -0.250    0.234
+## res_cov_y1_y2                    0.915 0.159  5.768  0.000    0.604    1.226
+## diff_b10_b20                    -0.123 0.043 -2.874  0.004   -0.206   -0.039
+## diff_b11_b21                    -0.151 0.043 -3.506  0.000   -0.235   -0.066
+## diff_rxy1_rxy2                  -0.149 0.041 -3.599  0.000   -0.230   -0.068
+## q_b11_b21                       -0.151 0.043 -3.474  0.001   -0.236   -0.066
+## q_rxy1_rxy2                     -0.149 0.042 -3.586  0.000   -0.231   -0.068
+## cross_over_point                -0.814 0.366 -2.222  0.026   -1.531   -0.096
+## sum_b11_b21                      0.045 0.233  0.192  0.848   -0.411    0.501
+## main_effect                      0.022 0.116  0.192  0.848   -0.206    0.250
+## interaction_vs_main_effect       0.128 0.112  1.144  0.253   -0.091    0.348
+## diff_abs_b11_abs_b21            -0.045 0.233 -0.192  0.848   -0.501    0.411
+## abs_diff_b11_b21                 0.151 0.043  3.506  0.000    0.066    0.235
+## abs_sum_b11_b21                  0.045 0.233  0.192  0.424   -0.411    0.501
+## dadas                            0.106 0.224  0.472  0.319   -0.334    0.546
+## q_r_equivalence                  0.149 0.042  3.586  1.000       NA       NA
+## q_b_equivalence                  0.151 0.043  3.474  1.000       NA       NA
+## cross_over_point_equivalence     0.814 0.366  2.222  0.987       NA       NA
+## cross_over_point_minimal_effect  0.814 0.366  2.222  0.013       NA       NA
 ```
 
 # Plotting the results
@@ -829,7 +819,7 @@ print(s,locale=F)
 ```
 
 ```
-## R version 4.3.0 (2023-04-21 ucrt)
+## R version 4.3.2 (2023-10-31 ucrt)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
 ## Running under: Windows 10 x64 (build 19045)
 ## 
@@ -840,38 +830,42 @@ print(s,locale=F)
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] finalfit_1.0.6    emmeans_1.8.6     MetBrewer_0.2.0  
-##  [4] ggpubr_0.6.0      ggplot2_3.4.2     tibble_3.2.1     
-##  [7] dplyr_1.1.2       rio_0.5.29        lmerTest_3.1-3   
-## [10] lme4_1.1-33       Matrix_1.5-4      multid_0.8.0.9000
-## [13] knitr_1.42        rmarkdown_2.21   
+##  [1] finalfit_1.0.6    emmeans_1.10.0    MetBrewer_0.2.0   ggpubr_0.6.0     
+##  [5] ggplot2_3.4.4     tibble_3.2.1      dplyr_1.1.4       rio_0.5.29       
+##  [9] lmerTest_3.1-3    lme4_1.1-35.1     Matrix_1.6-5      multid_1.0.0.9000
+## [13] knitr_1.44        rmarkdown_2.25   
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] tidyselect_1.2.0    farver_2.1.1        fastmap_1.1.1      
-##  [4] digest_0.6.31       estimability_1.4.1  lifecycle_1.0.3    
-##  [7] survival_3.5-5      magrittr_2.0.3      compiler_4.3.0     
-## [10] rlang_1.1.1         sass_0.4.6          tools_4.3.0        
-## [13] utf8_1.2.3          yaml_2.3.7          data.table_1.14.8  
-## [16] ggsignif_0.6.4      labeling_0.4.2      mnormt_2.1.1       
-## [19] curl_5.0.0          abind_1.4-5         withr_2.5.0        
-## [22] foreign_0.8-84      purrr_1.0.1         numDeriv_2016.8-1.1
-## [25] grid_4.3.0          stats4_4.3.0        fansi_1.0.4        
-## [28] lavaan_0.6-15       xtable_1.8-4        colorspace_2.1-0   
-## [31] mice_3.15.0         scales_1.2.1        MASS_7.3-58.4      
-## [34] cli_3.6.1           mvtnorm_1.1-3       crayon_1.5.2       
-## [37] generics_0.1.3      rstudioapi_0.14     tzdb_0.4.0         
-## [40] readxl_1.4.2        minqa_1.2.5         cachem_1.0.8       
-## [43] splines_4.3.0       parallel_4.3.0      cellranger_1.1.0   
-## [46] vctrs_0.6.2         boot_1.3-28.1       jsonlite_1.8.4     
-## [49] carData_3.0-5       car_3.1-2           hms_1.1.3          
-## [52] rstatix_0.7.2       tidyr_1.3.0         jquerylib_0.1.4    
-## [55] glue_1.6.2          nloptr_2.0.3        cowplot_1.1.1      
-## [58] stringi_1.7.12      gtable_0.3.3        quadprog_1.5-8     
-## [61] munsell_0.5.0       pillar_1.9.0        htmltools_0.5.5    
-## [64] R6_2.5.1            evaluate_0.21       pbivnorm_0.6.0     
-## [67] lattice_0.21-8      highr_0.10          haven_2.5.2        
-## [70] readr_2.1.4         backports_1.4.1     openxlsx_4.2.5.2   
-## [73] broom_1.0.4         bslib_0.4.2         Rcpp_1.0.10        
-## [76] zip_2.3.0           gridExtra_2.3       nlme_3.1-162       
-## [79] xfun_0.39           forcats_1.0.0       pkgconfig_2.0.3
+##  [1] mnormt_2.1.1        gridExtra_2.3       sandwich_3.0-2     
+##  [4] readxl_1.4.2        rlang_1.1.3         magrittr_2.0.3     
+##  [7] multcomp_1.4-25     compiler_4.3.2      vctrs_0.6.5        
+## [10] quadprog_1.5-8      pkgconfig_2.0.3     shape_1.4.6        
+## [13] crayon_1.5.2        fastmap_1.1.1       backports_1.4.1    
+## [16] labeling_0.4.3      pbivnorm_0.6.0      utf8_1.2.4         
+## [19] tzdb_0.4.0          haven_2.5.2         nloptr_2.0.3       
+## [22] purrr_1.0.2         xfun_0.39           glmnet_4.1-8       
+## [25] jomo_2.7-6          cachem_1.0.8        jsonlite_1.8.8     
+## [28] pan_1.9             broom_1.0.5         parallel_4.3.2     
+## [31] lavaan_0.6-17       R6_2.5.1            bslib_0.5.1        
+## [34] stringi_1.8.3       car_3.1-2           boot_1.3-28.1      
+## [37] rpart_4.1.21        jquerylib_0.1.4     cellranger_1.1.0   
+## [40] numDeriv_2016.8-1.1 estimability_1.4.1  Rcpp_1.0.12        
+## [43] iterators_1.0.14    zoo_1.8-12          readr_2.1.4        
+## [46] splines_4.3.2       nnet_7.3-19         tidyselect_1.2.0   
+## [49] rstudioapi_0.15.0   abind_1.4-5         yaml_2.3.7         
+## [52] codetools_0.2-19    curl_5.0.2          lattice_0.21-9     
+## [55] withr_3.0.0         coda_0.19-4         evaluate_0.23      
+## [58] foreign_0.8-85      survival_3.5-7      zip_2.3.0          
+## [61] pillar_1.9.0        carData_3.0-5       mice_3.16.0        
+## [64] foreach_1.5.2       stats4_4.3.2        generics_0.1.3     
+## [67] hms_1.1.3           munsell_0.5.0       scales_1.3.0       
+## [70] minqa_1.2.6         xtable_1.8-4        glue_1.7.0         
+## [73] tools_4.3.2         data.table_1.14.8   openxlsx_4.2.5.2   
+## [76] ggsignif_0.6.4      forcats_1.0.0       mvtnorm_1.2-4      
+## [79] cowplot_1.1.3       grid_4.3.2          tidyr_1.3.1        
+## [82] colorspace_2.1-0    nlme_3.1-163        cli_3.6.2          
+## [85] fansi_1.0.6         gtable_0.3.4        rstatix_0.7.2      
+## [88] sass_0.4.7          digest_0.6.34       TH.data_1.1-2      
+## [91] farver_2.1.1        htmltools_0.5.5     lifecycle_1.0.4    
+## [94] mitml_0.4-5         MASS_7.3-60
 ```

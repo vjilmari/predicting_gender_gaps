@@ -6,7 +6,7 @@ output:
     toc: yes
     number_sections: yes
     keep_md: yes
-date: "2023-05-30"
+date: "2024-03-22"
 ---
 
 
@@ -138,14 +138,6 @@ fit_O.z<-
           scaling_sd = "observed")
 ```
 
-```
-## NOTE: Results may be misleading due to involvement in interactions
-```
-
-```
-## refitting model(s) with ML (instead of REML)
-```
-
 ### Descriptive statistics
 
 
@@ -241,32 +233,58 @@ round(fit_O.z$results,3)
 ```
 
 ```
-##                            estimate    SE     df t.ratio p.value
-## r_xy1y2                      -0.078 0.138 43.934  -0.566   0.574
-## w_11                          0.102 0.026 43.765   4.010   0.000
-## w_21                          0.110 0.034 44.046   3.263   0.002
-## r_xy1                         0.448 0.112 43.765   4.010   0.000
-## r_xy2                         0.384 0.118 44.046   3.263   0.002
-## b_11                          0.397 0.099 43.765   4.010   0.000
-## b_21                          0.427 0.131 44.046   3.263   0.002
-## main_effect                   0.106 0.029 43.838   3.648   0.001
-## moderator_effect             -0.180 0.014 45.096 -13.074   0.000
-## interaction                  -0.008 0.014 43.934  -0.566   0.574
-## q_b11_b21                    -0.036    NA     NA      NA      NA
-## q_rxy1_rxy2                   0.078    NA     NA      NA      NA
-## cross_over_point            -23.110    NA     NA      NA      NA
-## interaction_vs_main          -0.098 0.023 43.438  -4.201   0.000
-## interaction_vs_main_bscale   -0.382 0.091 43.438  -4.201   0.000
-## interaction_vs_main_rscale   -0.481 0.115 43.612  -4.176   0.000
-## dadas                        -0.205 0.051 43.765  -4.010   1.000
-## dadas_bscale                 -0.794 0.198 43.765  -4.010   1.000
-## dadas_rscale                 -0.896 0.224 43.765  -4.010   1.000
-## abs_diff                      0.008 0.014 43.934   0.566   0.287
-## abs_sum                       0.212 0.058 43.838   3.648   0.000
-## abs_diff_bscale               0.030 0.053 43.934   0.566   0.287
-## abs_sum_bscale                0.824 0.226 43.838   3.648   0.000
-## abs_diff_rscale              -0.065 0.043 39.842  -1.488   0.928
-## abs_sum_rscale                0.832 0.225 43.824   3.692   0.000
+##                            estimate    SE     df t.ratio p.value ci.lower
+## r_xy1y2                      -0.078 0.138 43.934  -0.566   0.574   -0.357
+## w_11                          0.102 0.026 43.765   4.010   0.000    0.051
+## w_21                          0.110 0.034 44.046   3.263   0.002    0.042
+## r_xy1                         0.448 0.112 43.765   4.010   0.000    0.223
+## r_xy2                         0.384 0.118 44.046   3.263   0.002    0.147
+## b_11                          0.397 0.099 43.765   4.010   0.000    0.198
+## b_21                          0.427 0.131 44.046   3.263   0.002    0.163
+## main_effect                   0.106 0.029 43.838   3.648   0.001    0.048
+## moderator_effect             -0.180 0.014 45.096 -13.074   0.000   -0.208
+## interaction                  -0.008 0.014 43.934  -0.566   0.574   -0.035
+## q_b11_b21                    -0.036    NA     NA      NA      NA       NA
+## q_rxy1_rxy2                   0.078    NA     NA      NA      NA       NA
+## cross_over_point            -23.110    NA     NA      NA      NA       NA
+## interaction_vs_main          -0.098 0.023 43.438  -4.201   0.000   -0.146
+## interaction_vs_main_bscale   -0.382 0.091 43.438  -4.201   0.000   -0.565
+## interaction_vs_main_rscale   -0.481 0.115 43.612  -4.176   0.000   -0.712
+## dadas                        -0.205 0.051 43.765  -4.010   1.000   -0.308
+## dadas_bscale                 -0.794 0.198 43.765  -4.010   1.000   -1.194
+## dadas_rscale                 -0.896 0.224 43.765  -4.010   1.000   -1.347
+## abs_diff                      0.008 0.014 43.934   0.566   0.287   -0.020
+## abs_sum                       0.212 0.058 43.838   3.648   0.000    0.095
+## abs_diff_bscale               0.030 0.053 43.934   0.566   0.287   -0.077
+## abs_sum_bscale                0.824 0.226 43.838   3.648   0.000    0.369
+## abs_diff_rscale              -0.065 0.043 39.842  -1.488   0.928   -0.152
+## abs_sum_rscale                0.832 0.225 43.824   3.692   0.000    0.378
+##                            ci.upper
+## r_xy1y2                       0.200
+## w_11                          0.154
+## w_21                          0.178
+## r_xy1                         0.674
+## r_xy2                         0.621
+## b_11                          0.597
+## b_21                          0.691
+## main_effect                   0.165
+## moderator_effect             -0.152
+## interaction                   0.020
+## q_b11_b21                        NA
+## q_rxy1_rxy2                      NA
+## cross_over_point                 NA
+## interaction_vs_main          -0.051
+## interaction_vs_main_bscale   -0.199
+## interaction_vs_main_rscale   -0.249
+## dadas                        -0.102
+## dadas_bscale                 -0.395
+## dadas_rscale                 -0.446
+## abs_diff                      0.035
+## abs_sum                       0.330
+## abs_diff_bscale               0.138
+## abs_sum_bscale                1.280
+## abs_diff_rscale               0.023
+## abs_sum_rscale                1.286
 ```
 
 ### Multi-level model output
@@ -717,7 +735,7 @@ print(s,locale=F)
 ```
 
 ```
-## R version 4.3.0 (2023-04-21 ucrt)
+## R version 4.3.2 (2023-10-31 ucrt)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
 ## Running under: Windows 10 x64 (build 19045)
 ## 
@@ -728,40 +746,44 @@ print(s,locale=F)
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] finalfit_1.0.6    emmeans_1.8.6     MetBrewer_0.2.0   ggpubr_0.6.0     
-##  [5] ggplot2_3.4.2     tibble_3.2.1      dplyr_1.1.2       rio_0.5.29       
-##  [9] lmerTest_3.1-3    lme4_1.1-33       Matrix_1.5-4      multid_0.8.0.9000
-## [13] knitr_1.42        rmarkdown_2.21   
+##  [1] finalfit_1.0.6    emmeans_1.10.0    MetBrewer_0.2.0   ggpubr_0.6.0     
+##  [5] ggplot2_3.4.4     tibble_3.2.1      dplyr_1.1.4       rio_0.5.29       
+##  [9] lmerTest_3.1-3    lme4_1.1-35.1     Matrix_1.6-5      multid_1.0.0.9000
+## [13] knitr_1.44        rmarkdown_2.25   
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] tidyselect_1.2.0    farver_2.1.1        fastmap_1.1.1      
-##  [4] pROC_1.18.2         digest_0.6.31       estimability_1.4.1 
-##  [7] lifecycle_1.0.3     survival_3.5-5      magrittr_2.0.3     
-## [10] compiler_4.3.0      rlang_1.1.1         sass_0.4.6         
-## [13] tools_4.3.0         utf8_1.2.3          yaml_2.3.7         
-## [16] data.table_1.14.8   ggsignif_0.6.4      labeling_0.4.2     
-## [19] mnormt_2.1.1        curl_5.0.0          plyr_1.8.8         
-## [22] abind_1.4-5         withr_2.5.0         foreign_0.8-84     
-## [25] purrr_1.0.1         numDeriv_2016.8-1.1 stats4_4.3.0       
-## [28] grid_4.3.0          fansi_1.0.4         lavaan_0.6-15      
-## [31] xtable_1.8-4        colorspace_2.1-0    mice_3.15.0        
-## [34] scales_1.2.1        iterators_1.0.14    MASS_7.3-58.4      
-## [37] cli_3.6.1           mvtnorm_1.1-3       crayon_1.5.2       
-## [40] generics_0.1.3      rstudioapi_0.14     readxl_1.4.2       
-## [43] minqa_1.2.5         cachem_1.0.8        splines_4.3.0      
-## [46] parallel_4.3.0      cellranger_1.1.0    vctrs_0.6.2        
-## [49] boot_1.3-28.1       glmnet_4.1-7        jsonlite_1.8.4     
-## [52] carData_3.0-5       car_3.1-2           hms_1.1.3          
-## [55] rstatix_0.7.2       foreach_1.5.2       tidyr_1.3.0        
-## [58] jquerylib_0.1.4     glue_1.6.2          nloptr_2.0.3       
-## [61] codetools_0.2-19    cowplot_1.1.1       stringi_1.7.12     
-## [64] gtable_0.3.3        shape_1.4.6         quadprog_1.5-8     
-## [67] munsell_0.5.0       pillar_1.9.0        htmltools_0.5.5    
-## [70] R6_2.5.1            pbivnorm_0.6.0      evaluate_0.21      
-## [73] lattice_0.21-8      highr_0.10          haven_2.5.2        
-## [76] backports_1.4.1     openxlsx_4.2.5.2    broom_1.0.4        
-## [79] bslib_0.4.2         Rcpp_1.0.10         zip_2.3.0          
-## [82] gridExtra_2.3       nlme_3.1-162        xfun_0.39          
-## [85] forcats_1.0.0       pkgconfig_2.0.3
+##  [1] mnormt_2.1.1        pROC_1.18.5         gridExtra_2.3      
+##  [4] sandwich_3.0-2      readxl_1.4.2        rlang_1.1.3        
+##  [7] magrittr_2.0.3      multcomp_1.4-25     compiler_4.3.2     
+## [10] vctrs_0.6.5         quadprog_1.5-8      pkgconfig_2.0.3    
+## [13] shape_1.4.6         crayon_1.5.2        fastmap_1.1.1      
+## [16] backports_1.4.1     labeling_0.4.3      pbivnorm_0.6.0     
+## [19] utf8_1.2.4          tzdb_0.4.0          haven_2.5.2        
+## [22] nloptr_2.0.3        purrr_1.0.2         xfun_0.39          
+## [25] glmnet_4.1-8        jomo_2.7-6          cachem_1.0.8       
+## [28] jsonlite_1.8.8      pan_1.9             broom_1.0.5        
+## [31] parallel_4.3.2      lavaan_0.6-17       R6_2.5.1           
+## [34] bslib_0.5.1         stringi_1.8.3       car_3.1-2          
+## [37] boot_1.3-28.1       rpart_4.1.21        jquerylib_0.1.4    
+## [40] cellranger_1.1.0    numDeriv_2016.8-1.1 estimability_1.4.1 
+## [43] Rcpp_1.0.12         iterators_1.0.14    zoo_1.8-12         
+## [46] readr_2.1.4         splines_4.3.2       nnet_7.3-19        
+## [49] tidyselect_1.2.0    rstudioapi_0.15.0   abind_1.4-5        
+## [52] yaml_2.3.7          codetools_0.2-19    curl_5.0.2         
+## [55] plyr_1.8.9          lattice_0.21-9      withr_3.0.0        
+## [58] coda_0.19-4         evaluate_0.23       foreign_0.8-85     
+## [61] survival_3.5-7      zip_2.3.0           pillar_1.9.0       
+## [64] carData_3.0-5       mice_3.16.0         foreach_1.5.2      
+## [67] stats4_4.3.2        generics_0.1.3      hms_1.1.3          
+## [70] munsell_0.5.0       scales_1.3.0        minqa_1.2.6        
+## [73] xtable_1.8-4        glue_1.7.0          tools_4.3.2        
+## [76] data.table_1.14.8   openxlsx_4.2.5.2    ggsignif_0.6.4     
+## [79] forcats_1.0.0       mvtnorm_1.2-4       cowplot_1.1.3      
+## [82] grid_4.3.2          tidyr_1.3.1         colorspace_2.1-0   
+## [85] nlme_3.1-163        cli_3.6.2           fansi_1.0.6        
+## [88] gtable_0.3.4        rstatix_0.7.2       sass_0.4.7         
+## [91] digest_0.6.34       TH.data_1.1-2       farver_2.1.1       
+## [94] htmltools_0.5.5     lifecycle_1.0.4     mitml_0.4-5        
+## [97] MASS_7.3-60
 ```
 

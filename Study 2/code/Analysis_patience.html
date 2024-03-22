@@ -530,10 +530,12 @@ export(t(data.frame(reliab.patience)),
        &quot;../results/reliab.patience.xlsx&quot;,
        overwrite=T)
 reliab.patience</code></pre>
-<pre><code>##              r11              r22              r12              sd1              sd2 
-##       0.98987272       0.98821487       0.97172933       0.42623959       0.36518551 
-##           sd_d12               m1               m2            m_d12 reliability_dmsa 
-##       0.11193136       0.06426680      -0.01535146       0.07961826       0.72769592</code></pre>
+<pre><code>##              r11              r22              r12              sd1 
+##       0.98987272       0.98821487       0.97172933       0.42623959 
+##              sd2           sd_d12               m1               m2 
+##       0.36518551       0.11193136       0.06426680      -0.01535146 
+##            m_d12 reliability_dmsa 
+##       0.07961826       0.72769592</code></pre>
 </div>
 <div id="multi-level-model" class="section level2" number="2.2">
 <h2><span class="header-section-number">2.2</span> Multi-level
@@ -546,17 +548,23 @@ model</h2>
           moderator = &quot;sex.c&quot;,moderator_values=c(0.5,-0.5),
           DV = &quot;patience&quot;,lvl2_unit = &quot;country&quot;,re_cov_test = T,
           scaling_sd = &quot;observed&quot;)</code></pre>
-<pre><code>## Warning: Some predictor variables are on very different scales: consider rescaling
+<pre><code>## Warning: Some predictor variables are on very different scales: consider
+## rescaling
 
-## Warning: Some predictor variables are on very different scales: consider rescaling
+## Warning: Some predictor variables are on very different scales: consider
+## rescaling
 
-## Warning: Some predictor variables are on very different scales: consider rescaling
+## Warning: Some predictor variables are on very different scales: consider
+## rescaling
 
-## Warning: Some predictor variables are on very different scales: consider rescaling
+## Warning: Some predictor variables are on very different scales: consider
+## rescaling
 
-## Warning: Some predictor variables are on very different scales: consider rescaling
+## Warning: Some predictor variables are on very different scales: consider
+## rescaling
 
-## Warning: Some predictor variables are on very different scales: consider rescaling</code></pre>
+## Warning: Some predictor variables are on very different scales: consider
+## rescaling</code></pre>
 </div>
 <div id="descriptive-statistics" class="section level3" number="2.2.2">
 <h3><span class="header-section-number">2.2.2</span> Descriptive
@@ -565,24 +573,24 @@ statistics</h3>
        &quot;../results/patience_ml_desc.xlsx&quot;,
        overwrite=T)
 round(fit_patience$descriptives,2)</code></pre>
-<pre><code>##                       M   SD means_y1 means_y1_scaled means_y2 means_y2_scaled  GEI
-## means_y1           0.06 0.43     1.00            1.00     0.97            0.97 0.58
-## means_y1_scaled    0.16 1.07     1.00            1.00     0.97            0.97 0.58
-## means_y2          -0.02 0.37     0.97            0.97     1.00            1.00 0.53
-## means_y2_scaled   -0.04 0.92     0.97            0.97     1.00            1.00 0.53
-## GEI                0.00 1.00     0.58            0.58     0.53            0.53 1.00
-## GEI_scaled         0.00 1.00     0.58            0.58     0.53            0.53 1.00
-## diff_score         0.08 0.11     0.64            0.64     0.44            0.44 0.50
-## diff_score_scaled  0.20 0.28     0.64            0.64     0.44            0.44 0.50
-##                   GEI_scaled diff_score diff_score_scaled
-## means_y1                0.58       0.64              0.64
-## means_y1_scaled         0.58       0.64              0.64
-## means_y2                0.53       0.44              0.44
-## means_y2_scaled         0.53       0.44              0.44
-## GEI                     1.00       0.50              0.50
-## GEI_scaled              1.00       0.50              0.50
-## diff_score              0.50       1.00              1.00
-## diff_score_scaled       0.50       1.00              1.00</code></pre>
+<pre><code>##                       M   SD means_y1 means_y1_scaled means_y2 means_y2_scaled
+## means_y1           0.06 0.43     1.00            1.00     0.97            0.97
+## means_y1_scaled    0.16 1.07     1.00            1.00     0.97            0.97
+## means_y2          -0.02 0.37     0.97            0.97     1.00            1.00
+## means_y2_scaled   -0.04 0.92     0.97            0.97     1.00            1.00
+## GEI                0.00 1.00     0.58            0.58     0.53            0.53
+## GEI_scaled         0.00 1.00     0.58            0.58     0.53            0.53
+## diff_score         0.08 0.11     0.64            0.64     0.44            0.44
+## diff_score_scaled  0.20 0.28     0.64            0.64     0.44            0.44
+##                    GEI GEI_scaled diff_score diff_score_scaled
+## means_y1          0.58       0.58       0.64              0.64
+## means_y1_scaled   0.58       0.58       0.64              0.64
+## means_y2          0.53       0.53       0.44              0.44
+## means_y2_scaled   0.53       0.53       0.44              0.44
+## GEI               1.00       1.00       0.50              0.50
+## GEI_scaled        1.00       1.00       0.50              0.50
+## diff_score        0.50       0.50       1.00              1.00
+## diff_score_scaled 0.50       0.50       1.00              1.00</code></pre>
 <pre class="r"><code>round(fit_patience$SDs,2)</code></pre>
 <pre><code>##         SD_y1         SD_y2     SD_pooled SD_diff_score            VR 
 ##          0.43          0.37          0.40          0.11          1.36</code></pre>
@@ -619,39 +627,66 @@ results</h3>
        &quot;../results/patience_ml_results.xlsx&quot;,
        overwrite=T)
 round(fit_patience$results,3)</code></pre>
-<pre><code>##                            estimate    SE     df t.ratio p.value
-## r_xy1y2                       0.437 0.097 61.701   4.510   0.000
-## w_11                          0.264 0.042 68.839   6.317   0.000
-## w_21                          0.215 0.037 68.979   5.743   0.000
-## r_xy1                         0.619 0.098 68.839   6.317   0.000
-## r_xy2                         0.588 0.102 68.979   5.743   0.000
-## b_11                          0.666 0.105 68.839   6.317   0.000
-## b_21                          0.543 0.094 68.979   5.743   0.000
-## main_effect                   0.239 0.039 68.994   6.094   0.000
-## moderator_effect              0.062 0.011 67.238   5.612   0.000
-## interaction                   0.049 0.011 61.701   4.510   0.000
-## q_b11_b21                     0.196    NA     NA      NA      NA
-## q_rxy1_rxy2                   0.048    NA     NA      NA      NA
-## cross_over_point             -1.259    NA     NA      NA      NA
-## interaction_vs_main          -0.190 0.036 68.714  -5.248   0.000
-## interaction_vs_main_bscale   -0.481 0.092 68.714  -5.248   0.000
-## interaction_vs_main_rscale   -0.573 0.107 68.791  -5.359   0.000
-## dadas                        -0.429 0.075 68.979  -5.743   1.000
-## dadas_bscale                 -1.085 0.189 68.979  -5.743   1.000
-## dadas_rscale                 -1.176 0.205 68.979  -5.743   1.000
-## abs_diff                      0.049 0.011 61.701   4.510   0.000
-## abs_sum                       0.478 0.078 68.994   6.094   0.000
-## abs_diff_bscale               0.124 0.027 61.701   4.510   0.000
-## abs_sum_bscale                1.209 0.198 68.994   6.094   0.000
-## abs_diff_rscale               0.031 0.026 60.288   1.197   0.118
-## abs_sum_rscale                1.206 0.199 68.999   6.072   0.000</code></pre>
+<pre><code>##                            estimate    SE     df t.ratio p.value ci.lower
+## r_xy1y2                       0.437 0.097 61.701   4.510   0.000    0.243
+## w_11                          0.264 0.042 68.839   6.317   0.000    0.180
+## w_21                          0.215 0.037 68.979   5.743   0.000    0.140
+## r_xy1                         0.619 0.098 68.839   6.317   0.000    0.423
+## r_xy2                         0.588 0.102 68.979   5.743   0.000    0.384
+## b_11                          0.666 0.105 68.839   6.317   0.000    0.456
+## b_21                          0.543 0.094 68.979   5.743   0.000    0.354
+## main_effect                   0.239 0.039 68.994   6.094   0.000    0.161
+## moderator_effect              0.062 0.011 67.238   5.612   0.000    0.040
+## interaction                   0.049 0.011 61.701   4.510   0.000    0.027
+## q_b11_b21                     0.196    NA     NA      NA      NA       NA
+## q_rxy1_rxy2                   0.048    NA     NA      NA      NA       NA
+## cross_over_point             -1.259    NA     NA      NA      NA       NA
+## interaction_vs_main          -0.190 0.036 68.714  -5.248   0.000   -0.263
+## interaction_vs_main_bscale   -0.481 0.092 68.714  -5.248   0.000   -0.663
+## interaction_vs_main_rscale   -0.573 0.107 68.791  -5.359   0.000   -0.786
+## dadas                        -0.429 0.075 68.979  -5.743   1.000   -0.579
+## dadas_bscale                 -1.085 0.189 68.979  -5.743   1.000   -1.462
+## dadas_rscale                 -1.176 0.205 68.979  -5.743   1.000   -1.584
+## abs_diff                      0.049 0.011 61.701   4.510   0.000    0.027
+## abs_sum                       0.478 0.078 68.994   6.094   0.000    0.322
+## abs_diff_bscale               0.124 0.027 61.701   4.510   0.000    0.069
+## abs_sum_bscale                1.209 0.198 68.994   6.094   0.000    0.813
+## abs_diff_rscale               0.031 0.026 60.288   1.197   0.118   -0.021
+## abs_sum_rscale                1.206 0.199 68.999   6.072   0.000    0.810
+##                            ci.upper
+## r_xy1y2                       0.631
+## w_11                          0.347
+## w_21                          0.289
+## r_xy1                         0.814
+## r_xy2                         0.792
+## b_11                          0.877
+## b_21                          0.731
+## main_effect                   0.317
+## moderator_effect              0.084
+## interaction                   0.071
+## q_b11_b21                        NA
+## q_rxy1_rxy2                      NA
+## cross_over_point                 NA
+## interaction_vs_main          -0.118
+## interaction_vs_main_bscale   -0.298
+## interaction_vs_main_rscale   -0.359
+## dadas                        -0.280
+## dadas_bscale                 -0.708
+## dadas_rscale                 -0.767
+## abs_diff                      0.071
+## abs_sum                       0.635
+## abs_diff_bscale               0.179
+## abs_sum_bscale                1.604
+## abs_diff_rscale               0.082
+## abs_sum_rscale                1.603</code></pre>
 </div>
 <div id="multi-level-model-output" class="section level3" number="2.2.6">
 <h3><span class="header-section-number">2.2.6</span> Multi-level model
 output</h3>
 <pre class="r"><code># cross-level interaction model
 summary(fit_patience$model)</code></pre>
-<pre><code>## Linear mixed model fit by REML. t-tests use Satterthwaite&#39;s method [&#39;lmerModLmerTest&#39;]
+<pre><code>## Linear mixed model fit by REML. t-tests use Satterthwaite&#39;s method [
+## lmerModLmerTest]
 ## Formula: model_formula
 ##    Data: data
 ## Control: lme4::lmerControl(optimizer = &quot;bobyqa&quot;)
@@ -693,8 +728,10 @@ summary(fit_patience$model)</code></pre>
 ## Some predictor variables are on very different scales: consider rescaling</code></pre>
 <pre class="r"><code># reduced model without the predictor
 summary(fit_patience$reduced_model)</code></pre>
-<pre><code>## Linear mixed model fit by REML. t-tests use Satterthwaite&#39;s method [&#39;lmerModLmerTest&#39;]
-## Formula: patience ~ sex.c + age + age_sq + subj_math_skills + (sex.c |      country)
+<pre><code>## Linear mixed model fit by REML. t-tests use Satterthwaite&#39;s method [
+## lmerModLmerTest]
+## Formula: patience ~ sex.c + age + age_sq + subj_math_skills + (sex.c |  
+##     country)
 ##    Data: data
 ## Control: lme4::lmerControl(optimizer = &quot;bobyqa&quot;)
 ## 
@@ -923,12 +960,8 @@ p1.patience.GEI&lt;-ggplot(p,aes(y=yvar,x=xvar,color=sex))+
                 y=c(0.7,0.6),size=14,hjust=&quot;left&quot;))+
   geom_text(inherit.aes=F,aes(x=-1.50,y=0.5,
                               label=coef_q,size=14,hjust=&quot;left&quot;),
-            show.legend=F)</code></pre>
-<pre><code>## Warning: The `size` argument of `element_line()` is deprecated as of ggplot2 3.4.0.
-## ℹ Please use the `linewidth` argument instead.
-## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.</code></pre>
-<pre class="r"><code>p1.patience.GEI</code></pre>
+            show.legend=F)
+p1.patience.GEI</code></pre>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
 <pre class="r"><code># prediction plot for difference score
 
@@ -1053,7 +1086,7 @@ dev.off()</code></pre>
 information</h1>
 <pre class="r"><code>s&lt;-sessionInfo()
 print(s,locale=F)</code></pre>
-<pre><code>## R version 4.3.0 (2023-04-21 ucrt)
+<pre><code>## R version 4.3.2 (2023-10-31 ucrt)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
 ## Running under: Windows 10 x64 (build 19045)
 ## 
@@ -1064,33 +1097,44 @@ print(s,locale=F)</code></pre>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] finalfit_1.0.6    emmeans_1.8.6     MetBrewer_0.2.0   ggpubr_0.6.0     
-##  [5] ggplot2_3.4.2     tibble_3.2.1      dplyr_1.1.2       rio_0.5.29       
-##  [9] lmerTest_3.1-3    lme4_1.1-33       Matrix_1.5-4      multid_0.8.0.9000
-## [13] knitr_1.42        rmarkdown_2.21   
+##  [1] finalfit_1.0.6    emmeans_1.10.0    MetBrewer_0.2.0   ggpubr_0.6.0     
+##  [5] ggplot2_3.4.4     tibble_3.2.1      dplyr_1.1.4       rio_0.5.29       
+##  [9] lmerTest_3.1-3    lme4_1.1-35.1     Matrix_1.6-5      multid_1.0.0.9000
+## [13] knitr_1.44        rmarkdown_2.25   
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] tidyselect_1.2.0    farver_2.1.1        fastmap_1.1.1       digest_0.6.31      
-##  [5] estimability_1.4.1  lifecycle_1.0.3     survival_3.5-5      magrittr_2.0.3     
-##  [9] compiler_4.3.0      rlang_1.1.1         sass_0.4.6          tools_4.3.0        
-## [13] utf8_1.2.3          yaml_2.3.7          data.table_1.14.8   ggsignif_0.6.4     
-## [17] labeling_0.4.2      mnormt_2.1.1        curl_5.0.0          abind_1.4-5        
-## [21] withr_2.5.0         foreign_0.8-84      purrr_1.0.1         numDeriv_2016.8-1.1
-## [25] grid_4.3.0          stats4_4.3.0        fansi_1.0.4         lavaan_0.6-15      
-## [29] xtable_1.8-4        colorspace_2.1-0    mice_3.15.0         scales_1.2.1       
-## [33] MASS_7.3-58.4       cli_3.6.1           mvtnorm_1.1-3       crayon_1.5.2       
-## [37] generics_0.1.3      rstudioapi_0.14     tzdb_0.4.0          readxl_1.4.2       
-## [41] minqa_1.2.5         cachem_1.0.8        splines_4.3.0       parallel_4.3.0     
-## [45] cellranger_1.1.0    vctrs_0.6.2         boot_1.3-28.1       jsonlite_1.8.4     
-## [49] carData_3.0-5       car_3.1-2           hms_1.1.3           rstatix_0.7.2      
-## [53] tidyr_1.3.0         jquerylib_0.1.4     glue_1.6.2          nloptr_2.0.3       
-## [57] cowplot_1.1.1       stringi_1.7.12      gtable_0.3.3        quadprog_1.5-8     
-## [61] munsell_0.5.0       pillar_1.9.0        htmltools_0.5.5     R6_2.5.1           
-## [65] evaluate_0.21       pbivnorm_0.6.0      lattice_0.21-8      highr_0.10         
-## [69] haven_2.5.2         readr_2.1.4         backports_1.4.1     openxlsx_4.2.5.2   
-## [73] broom_1.0.4         bslib_0.4.2         Rcpp_1.0.10         zip_2.3.0          
-## [77] gridExtra_2.3       nlme_3.1-162        xfun_0.39           forcats_1.0.0      
-## [81] pkgconfig_2.0.3</code></pre>
+##  [1] mnormt_2.1.1        gridExtra_2.3       sandwich_3.0-2     
+##  [4] readxl_1.4.2        rlang_1.1.3         magrittr_2.0.3     
+##  [7] multcomp_1.4-25     compiler_4.3.2      vctrs_0.6.5        
+## [10] quadprog_1.5-8      pkgconfig_2.0.3     shape_1.4.6        
+## [13] crayon_1.5.2        fastmap_1.1.1       backports_1.4.1    
+## [16] labeling_0.4.3      pbivnorm_0.6.0      utf8_1.2.4         
+## [19] tzdb_0.4.0          haven_2.5.2         nloptr_2.0.3       
+## [22] purrr_1.0.2         xfun_0.39           glmnet_4.1-8       
+## [25] jomo_2.7-6          cachem_1.0.8        jsonlite_1.8.8     
+## [28] pan_1.9             broom_1.0.5         parallel_4.3.2     
+## [31] lavaan_0.6-17       R6_2.5.1            bslib_0.5.1        
+## [34] stringi_1.8.3       car_3.1-2           boot_1.3-28.1      
+## [37] rpart_4.1.21        jquerylib_0.1.4     cellranger_1.1.0   
+## [40] numDeriv_2016.8-1.1 estimability_1.4.1  Rcpp_1.0.12        
+## [43] iterators_1.0.14    zoo_1.8-12          readr_2.1.4        
+## [46] splines_4.3.2       nnet_7.3-19         tidyselect_1.2.0   
+## [49] rstudioapi_0.15.0   abind_1.4-5         yaml_2.3.7         
+## [52] codetools_0.2-19    curl_5.0.2          lattice_0.21-9     
+## [55] withr_3.0.0         coda_0.19-4         evaluate_0.23      
+## [58] foreign_0.8-85      survival_3.5-7      zip_2.3.0          
+## [61] pillar_1.9.0        carData_3.0-5       mice_3.16.0        
+## [64] foreach_1.5.2       stats4_4.3.2        generics_0.1.3     
+## [67] hms_1.1.3           munsell_0.5.0       scales_1.3.0       
+## [70] minqa_1.2.6         xtable_1.8-4        glue_1.7.0         
+## [73] tools_4.3.2         data.table_1.14.8   openxlsx_4.2.5.2   
+## [76] ggsignif_0.6.4      forcats_1.0.0       mvtnorm_1.2-4      
+## [79] cowplot_1.1.3       grid_4.3.2          tidyr_1.3.1        
+## [82] colorspace_2.1-0    nlme_3.1-163        cli_3.6.2          
+## [85] fansi_1.0.6         gtable_0.3.4        rstatix_0.7.2      
+## [88] sass_0.4.7          digest_0.6.34       TH.data_1.1-2      
+## [91] farver_2.1.1        htmltools_0.5.5     lifecycle_1.0.4    
+## [94] mitml_0.4-5         MASS_7.3-60</code></pre>
 </div>
 
 
