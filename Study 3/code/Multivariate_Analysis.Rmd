@@ -496,6 +496,12 @@ png(filename =
     width = 21.0,height=29.7*(4/5),res = 600)
 pall.MF
 dev.off()
+
+ggplot2::ggsave(pall.MF,path = "../results",
+                filename = "Figure_7.jpg",
+                device = "jpg",units = "cm",
+                width = 21,
+                height = 29.7*(4/5),dpi = 300)
 ```
 
 # Session information

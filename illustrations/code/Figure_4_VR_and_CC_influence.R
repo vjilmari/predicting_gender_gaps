@@ -53,7 +53,13 @@ fig_total_bias<-
         legend.position=c(0.8,0.6))
 
 fig_total_bias
-png("illustrations/Figure_VR_and_CC_influence.png",width = 21,
-    height=29.7*(3/4),units = "cm",res = 300)
-fig_total_bias
-dev.off()
+
+
+# save the file
+ggplot2::ggsave(fig_total_bias,path = "illustrations",
+                filename = "Figure_4_VR_and_CC_influence.jpg",
+                device = "jpg",units = "cm",
+                width = 21,
+                height = 29.7*(3/4),dpi = 300)
+
+

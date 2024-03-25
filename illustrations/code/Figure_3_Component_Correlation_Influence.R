@@ -92,9 +92,10 @@ plot<-
 plot  
 
 # save the file
-png(filename = 
-      "illustrations/Figure_component_correlation_influence.png",
-    units = "cm",
-    height = (21.0/2),width=(21.0/2),res = 600)
-plot
-dev.off()
+ggplot2::ggsave(plot,path = "illustrations",
+                filename = "Figure_3_component_correlation_influence.jpg",
+                device = "jpg",units = "cm",
+                width = (21.0/2),
+                height = (21.0/2),dpi = 300)
+
+
